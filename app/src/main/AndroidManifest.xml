@@ -2,18 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
+    <!-- Hardware features -->
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
+        android:name=".DocumentScannerApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,33 +21,38 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AgroTrace">
-        <activity
-            android:name=".ui.theme.SupabaseClient"
-            android:exported="false" />
-        <activity
-            android:name=".ui.theme.ExtractionViewModel"
-            android:exported="false" />
-        <activity
-            android:name=".ui.theme.GeminiExtractionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.theme.DocumentCropperActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.theme.DocumentScannerActivity"
-            android:exported="false" />
+        android:theme="@style/Theme.DocumentScanner"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="35">
+
+        <!-- MainActivity: Entry point -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AgroTrace">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Scanner Activity -->
+        <activity
+            android:name=".ScannerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Extraction Activity -->
+        <activity
+            android:name=".ExtractionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Results/History Activity -->
+        <activity
+            android:name=".ResultsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+    </application>
 </manifest>

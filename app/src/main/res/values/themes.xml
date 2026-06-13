@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.AgroTrace" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.DocumentScanner" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:statusBarColor">#1976D2</item>
+    </style>
 </resources>
