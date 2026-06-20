@@ -3,7 +3,6 @@ package com.lnbti.agrotrace
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
-import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.Serializable
 
 // Global Supabase client reference
@@ -29,11 +28,63 @@ data class DocumentRecord(
     val updated_at: String? = null
 )
 
+@Serializable
+data class LandApprovalForm(
+    val lot_no_for_seeds: String,
+    val land_address: String? = null,
+    val transplanted_date: String? = null,
+    val form_date: String? = null,
+    val form_id: Long? = 1
+)
+
+@Serializable
+data class SeedActLotNo(
+    val lot_no: String,
+    val seed_act_registration_no: String
+)
+
+@Serializable
+data class SeedActRegistration(
+    val seed_act_no: String
+)
+
 // Repository for all database operations
 class DocumentRepository {
 
     private val db = Supabase.client.postgrest
-    private val storage = Supabase.client.storage
+
+    // ── SEED ACT REGISTRATION ───────────────────────────────
+    suspend fun ensureRegistrationExists(regNo: String): Result<Unit> {
+        return try {
+            db["seed_act_registrations"].upsert(SeedActRegistration(regNo))
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ── SEED ACT LOT NO ─────────────────────────────────────
+    suspend fun ensureSeedLotNoExists(lotNo: String, regNo: String): Result<Unit> {
+        return try {
+            // Upsert (Insert if not exists)
+            db["seed_act_lot_no"].upsert(SeedActLotNo(lotNo, regNo))
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ── LAND APPROVAL FORM ──────────────────────────────────
+    suspend fun insertLandApprovalForm(form: LandApprovalForm): Result<String> {
+        return try {
+            val response = db["land_approval_form"]
+                .insert(form) { select() }
+                .decodeSingle<LandApprovalForm>()
+            Result.success(response.lot_no_for_seeds)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     // ── INSERT ──────────────────────────────────────────────
     suspend fun insertDocument(document: DocumentRecord): Result<String> {
@@ -88,20 +139,6 @@ class DocumentRepository {
             db["documents"]
                 .delete { filter { eq("id", id) } }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // ── UPLOAD IMAGE ────────────────────────────────────────
-    suspend fun uploadImage(bytes: ByteArray, fileName: String): Result<String> {
-        return try {
-            val bucket = storage.from("document-images")
-            bucket.upload(fileName, bytes) {
-                upsert = true
-            }
-            val url = bucket.publicUrl(fileName)
-            Result.success(url)
         } catch (e: Exception) {
             Result.failure(e)
         }

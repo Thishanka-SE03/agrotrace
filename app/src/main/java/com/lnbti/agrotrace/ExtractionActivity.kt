@@ -16,9 +16,23 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.io.File
 
+@Serializable
+data class ExtractionResult(
+    val lot_no_for_seeds: String? = null,
+    val land_address: String? = null,
+    val transplanted_date: String? = null,
+    val seed_act_registration_no: String? = null,
+    val form_date: String? = null
+)
+
 class ExtractionActivity : AppCompatActivity() {
+
+    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+    private var extractedData: ExtractionResult? = null
 
     companion object {
         private const val EXTRA_IMAGE_FILE = "extra_image_file"
@@ -113,66 +127,136 @@ class ExtractionActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // Extract all text from the document using Gemini 2.5
-            val fullText = extractFullTextWithGemini(bitmap)
+            // Extract structured data from the document using Gemini
+            val result = extractLandApprovalForm(bitmap)
 
             withContext(Dispatchers.Main) {
                 progressBar.visibility = View.GONE
-                tvResults.text = fullText ?: "❌ No text found"
-                tvStatus.text = if (fullText != null && !fullText.startsWith("ERROR")) "✅ Extraction complete" else "❌ Failed to extract text"
-                btnSave.visibility = View.VISIBLE
+                
+                result.onSuccess { data ->
+                    extractedData = data
+                    tvResults.text = """
+                        Lot No: ${data.lot_no_for_seeds ?: "Not found"}
+                        Address: ${data.land_address ?: "Not found"}
+                        Transplanted: ${data.transplanted_date ?: "Not found"}
+                        Form Date: ${data.form_date ?: "Not found"}
+                        Reg No: ${data.seed_act_registration_no ?: "Not found"}
+                    """.trimIndent()
+                    tvStatus.text = "✅ Extraction complete"
+                    btnSave.visibility = View.VISIBLE
+                }.onFailure { e ->
+                    tvResults.text = "❌ Failed to parse response: ${e.message}"
+                    tvStatus.text = "❌ Extraction failed"
+                }
+                
                 btnRetry.visibility = View.VISIBLE
             }
         }
     }
 
-    private suspend fun extractFullTextWithGemini(bitmap: Bitmap): String? {
+    private suspend fun extractLandApprovalForm(bitmap: Bitmap): Result<ExtractionResult> {
         val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
         
-        val prompt = "Extract all text from this image. Support Sinhala and English. Preserve layout. Handle cursive handwriting. Return only the extracted text."
-
-        return client.generateContent(prompt, bitmap).fold(
-            onSuccess = { it.trim() },
-            onFailure = { e ->
-                Log.e("Gemini", "Full text extraction failed", e)
-                "ERROR: ${e.message}"
+        val prompt = """
+            Analyze the provided image of a Land Approval Form and extract the following fields.
+            
+            Sinhala Label -> JSON Key
+            බීජ තොග අංකය -> lot_no_for_seeds
+            ගොවිපල පිහිටුවා ඇති ස්ථානය -> land_address
+            වගා කළ දිනය -> transplanted_date
+            බීජ පනත යටතේ ලියාපදිංචි අංකය -> seed_act_registration_no
+            දිනය (Form Date) -> form_date
+            
+            Extraction Rules:
+            1. If multiple records or a list exists, extract ONLY the first/main record. Do NOT concatenate multiple values.
+            2. For dates ('transplanted_date' and 'form_date'), convert to YYYY-MM-DD format (e.g., 20/11/2025 becomes 2025-11-20). This is CRITICAL.
+            3. For 'lot_no_for_seeds', extract only the first identifier found.
+            4. Locate the Sinhala labels even if there are minor OCR or formatting differences.
+            5. Trim unnecessary spaces and punctuation.
+            6. If a value cannot be determined, return null.
+            7. Do not guess missing values.
+            
+            Return ONLY valid JSON in this format:
+            {
+              "lot_no_for_seeds": "single_value",
+              "land_address": "single_value",
+              "transplanted_date": "YYYY-MM-DD",
+              "seed_act_registration_no": "single_value",
+              "form_date": "YYYY-MM-DD"
             }
-        )
+        """.trimIndent()
+
+        return client.generateContent(prompt, bitmap).mapCatching { jsonString ->
+            // Handle potential markdown formatting in Gemini response
+            val cleanJson = jsonString.trim()
+                .removeSurrounding("```json", "```")
+                .removeSurrounding("```")
+                .trim()
+            
+            json.decodeFromString<ExtractionResult>(cleanJson)
+        }
     }
 
     private fun saveToSupabase() {
+        val data = extractedData ?: return
+        
         tvStatus.text = "💾 Saving to Supabase..."
         btnSave.isEnabled = false
         progressBar.visibility = View.VISIBLE
 
-        val extractedText = tvResults.text.toString()
-
         lifecycleScope.launch {
-            // 1. Upload image to Storage
-            var imageUrl: String? = null
-            val imageFile = ExtractionState.imageFile
-            if (imageFile != null && imageFile.exists()) {
-                val bytes = withContext(Dispatchers.IO) { imageFile.readBytes() }
-                val fileName = "doc_${System.currentTimeMillis()}.jpg"
+            // 1. Ensure dependencies exist (Handle Foreign Key Constraints)
+            val lotNo = data.lot_no_for_seeds
+            val regNo = data.seed_act_registration_no
+            
+            if (lotNo != null && regNo != null) {
+                // First ensure the registration exists in seed_act_registrations
+                repository.ensureRegistrationExists(regNo).onFailure { e ->
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                        btnSave.isEnabled = true
+                        tvStatus.text = "❌ Failed to register Seed Act No: ${e.message}"
+                        Log.e("Supabase", "Registration insertion failed", e)
+                    }
+                    return@launch
+                }
 
-                repository.uploadImage(bytes, fileName).onSuccess { url ->
-                    imageUrl = url
-                    Log.d("Supabase", "Image uploaded: $url")
-                }.onFailure { e ->
-                    Log.e("Supabase", "Image upload failed", e)
+                // Then ensure the lot number exists in seed_act_lot_no
+                repository.ensureSeedLotNoExists(lotNo, regNo).onFailure { e ->
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                        btnSave.isEnabled = true
+                        tvStatus.text = "❌ Failed to register Lot No: ${e.message}"
+                        Log.e("Supabase", "Lot registration failed", e)
+                    }
+                    return@launch
+                }
+            } else if (lotNo != null) {
+                // Handle case where regNo might be null but lotNo is present
+                val effectiveRegNo = "N/A"
+                repository.ensureRegistrationExists(effectiveRegNo)
+                repository.ensureSeedLotNoExists(lotNo, effectiveRegNo).onFailure { e ->
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                        btnSave.isEnabled = true
+                        tvStatus.text = "❌ Failed to register Lot No (N/A): ${e.message}"
+                    }
+                    return@launch
                 }
             }
 
-            // 2. Build document record (saving full text in address or similar if no dedicated field)
-            // For now, we just pass the image and minimal info since specific fields are removed
-            val document = DocumentRecord(
-                full_name = "Extracted Document",
-                address = extractedText.take(500), // Save first 500 chars to address for now
-                aligned_image_url = imageUrl
+            // 2. Map to Database Model
+            val lotNoChecked = lotNo ?: "MISSING_LOT"
+            val form = LandApprovalForm(
+                lot_no_for_seeds = lotNoChecked,
+                land_address = data.land_address,
+                transplanted_date = data.transplanted_date,
+                form_date = data.form_date,
+                form_id = 1
             )
 
             // 3. Save to database
-            repository.insertDocument(document).onSuccess { docId ->
+            repository.insertLandApprovalForm(form).onSuccess { docId ->
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
                     btnSave.isEnabled = true
