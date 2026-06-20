@@ -88,8 +88,8 @@ class GeminiClient(private val apiKey: String) {
                 )
             )
 
-            // Using gemini-2.5-flash which is the stable production model as of June 2026
-            val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey"
+            // Using Gemini 3.1 Flash Lite - Fast and stable (June 2026)
+            val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=$apiKey"
 
             val response: HttpResponse = client.post(url) {
                 contentType(ContentType.Application.Json)
