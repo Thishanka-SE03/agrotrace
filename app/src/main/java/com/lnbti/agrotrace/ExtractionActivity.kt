@@ -23,13 +23,13 @@ import java.io.File
 @Serializable
 data class ExtractionResult(
     val document_type: String,
-    val lot_no_for_seeds: String? = null,
-    val land_address: String? = null,
-    val transplanted_date: String? = null,
+    val lot_no_for_seeds: List<String?> = emptyList(),
+    val land_address: List<String?> = emptyList(),
+    val transplanted_date: List<String?> = emptyList(),
     val form_date: String? = null,
     val see_act_registration_no: String? = null,
     val farmer_name: String? = null,
-    val contact_no: String? = null,
+    val contact_no: List<String?> = emptyList(),
     val address: String? = null,
     val crop_id: List<String?> = emptyList(),
     val variety: List<String?> = emptyList(),
@@ -144,13 +144,14 @@ class ExtractionActivity : AppCompatActivity() {
                 result.onSuccess { data ->
                     extractedData = data
                     tvResults.text = """
-                        Lot No: ${data.lot_no_for_seeds ?: "N/A"}
                         Farmer: ${data.farmer_name ?: "N/A"}
-                        Land Address: ${data.land_address ?: "N/A"}
-                        Transplanted: ${data.transplanted_date ?: "N/A"}
-                        Form Date: ${data.form_date ?: "N/A"}
                         Reg No: ${data.see_act_registration_no ?: "N/A"}
+                        Form Date: ${data.form_date ?: "N/A"}
                         Address: ${data.address ?: "N/A"}
+                        
+                        --- Table Records Found: ${data.crop_id.size} ---
+                        First Lot: ${data.lot_no_for_seeds.firstOrNull() ?: "N/A"}
+                        First Date: ${data.transplanted_date.firstOrNull() ?: "N/A"}
                     """.trimIndent()
                     tvStatus.text = "✅ Extraction complete"
                     btnSave.visibility = View.VISIBLE
@@ -168,59 +169,56 @@ class ExtractionActivity : AppCompatActivity() {
         val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
         
         val prompt = """
-            You are an expert document understanding AI specializing in extracting structured data from Sinhala agricultural documents.
-            
-            Extract data for Document Type 1: Land Approval Form.
+            You are an expert document understanding AI. Extract structured data from this Land Approval Form.
             
             ----------------------------------------------------
-            FIELD MAPPING
+            HEADER FIELDS (Single Values)
             ----------------------------------------------------
-            Extract these values from the CURRENT image provided:
-            
-            lot_no_for_seeds -> Find බීජ තොග අංකය. Extract the value next to it. 
-               - CRITICAL: This is often a code like 'P/2/25/MIL/RG11/025' or 'P/1/25/HIL/RGII/061'.
-               - BE CAREFUL with '11' vs 'II'. Look closely at the font. 
-               - If it's in a table, take it from the first row of the table.
-            
-            land_address -> Value next to හෝ ගොවිපල පිහිටුවා ඇති ස්ථානය (Often found in the table header or first row).
-            
-            transplanted_date -> Value next to වගා කළ දිනය. 
-            
-            form_date -> Value next to දිනය (The date the form was signed, usually near the bottom or top center, NOT transplanted date).
-            
             see_act_registration_no -> Value next to බීජ පනතේ ලියාපදිංචි අංකය.
+            form_date -> Value next to දිනය (Form signature date, NOT transplanted date).
             
-            contact_no -> Value next to දුරකථන අංකය.
-            
-            Farmer Details (Top Right Dotted area):
-            - The FIRST line inside the dotted area is farmer_name.
-            - All remaining lines inside that box belong to address. Combine with commas.
+            Farmer Details (Top Right Dotted Box):
+            - farmer_name: The FIRST line inside the box.
+            - address: All REMAINING lines in that box combined with commas.
             
             ----------------------------------------------------
-            TABLE EXTRACTION (ARRAYS)
+            TABLE FIELDS (JSON ARRAYS)
             ----------------------------------------------------
-            The form contains a table. Extract EVERY visible row for these fields and return as JSON ARRAYS:
+            The form has a main table. Extract EVERY row. Even if some values are repeated, include them in the array for each row.
             
-            crop_id -> ALL values under භෝගය column
-            variety -> ALL values under ප්‍රභේදය column
-            land_area -> ALL values under වපසරිය column
-            quantity_of_seeds_used -> ALL values under භාවිතා කල බීජ ප්‍රමාණය column
+            lot_no_for_seeds -> Values under භාවිතා කළ බීජ තොග අංකය column.
+               - CRITICAL: Read row by row. Each row has a different lot number (e.g. 'P/2/25/MIL/RGII/025', 'P/1/25/HIL/RGII/061', etc).
+               - Do NOT confuse '11' with 'II'. 
+            
+            land_address -> Values under හෝ ගොවිපල පිහිටුවා ඇති ස්ථානය column.
+            
+            transplanted_date -> Values under වගා කළ දිනය column. Convert to YYYY-MM-DD.
+            
+            contact_no -> Values under දුරකථන අංකය column.
+            
+            crop_id -> Values under භෝගය column.
+            
+            variety -> Values under ප්‍රභේදය column.
+            
+            land_area -> Values under වපසරිය column.
+            
+            quantity_of_seeds_used -> Values under භාවිතා කළ බීජ ප්‍රමාණය column.
             
             ----------------------------------------------------
             OUTPUT FORMAT
             ----------------------------------------------------
-            Return ONLY valid JSON. No markdown, no notes.
+            Return ONLY valid JSON.
             
             {
               "document_type": "land_approval_form",
-              "lot_no_for_seeds": "string",
-              "land_address": "string",
-              "transplanted_date": "YYYY-MM-DD",
-              "form_date": "YYYY-MM-DD",
               "see_act_registration_no": "string",
+              "form_date": "YYYY-MM-DD",
               "farmer_name": "string",
-              "contact_no": "string",
               "address": "string",
+              "lot_no_for_seeds": ["string"],
+              "land_address": ["string"],
+              "transplanted_date": ["YYYY-MM-DD"],
+              "contact_no": ["string"],
               "crop_id": ["string"],
               "variety": ["string"],
               "land_area": ["string"],
@@ -228,12 +226,12 @@ class ExtractionActivity : AppCompatActivity() {
             }
             
             ----------------------------------------------------
-            EXTRACTION RULES
+            RULES
             ----------------------------------------------------
-            • OCR PRECISION: Pay extremely close attention to alphanumeric codes (Lot numbers). Do not confuse '1' (one) with 'I' (capital i).
-            • NO MEMORY: Extract only what you see in the current image. Do not use values from any previous examples.
-            • Dates: Convert to YYYY-MM-DD format.
-            • If a value is missing, return null.
+            • Ensure all arrays have the SAME length (one entry per table row).
+            • If a value is missing in a row, use null in the array.
+            • Preserve Sinhala and English text exactly.
+            • No Markdown, no notes.
         """.trimIndent()
 
         return client.generateContent(prompt, bitmap).mapCatching { jsonString ->
@@ -256,18 +254,25 @@ class ExtractionActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             // Determine max rows from arrays
-            val rowCount = listOf(data.crop_id, data.variety, data.land_area, data.quantity_of_seeds_used)
-                .maxOf { it.size }
+            val rowCount = listOf(
+                data.lot_no_for_seeds,
+                data.land_address,
+                data.transplanted_date,
+                data.crop_id, 
+                data.variety, 
+                data.land_area, 
+                data.quantity_of_seeds_used
+            ).maxOf { it.size }
             
             val forms = (0 until rowCount).map { i ->
                 TempForm1(
-                    lot_no_for_seeds = data.lot_no_for_seeds,
-                    land_address = data.land_address,
-                    transplanted_date = data.transplanted_date,
+                    lot_no_for_seeds = data.lot_no_for_seeds.getOrNull(i) ?: data.lot_no_for_seeds.lastOrNull(),
+                    land_address = data.land_address.getOrNull(i) ?: data.land_address.lastOrNull(),
+                    transplanted_date = data.transplanted_date.getOrNull(i) ?: data.transplanted_date.lastOrNull(),
                     form_date = data.form_date,
                     see_act_registration_no = data.see_act_registration_no,
                     farmer_name = data.farmer_name,
-                    contact_no = data.contact_no,
+                    contact_no = data.contact_no.getOrNull(i) ?: data.contact_no.lastOrNull(),
                     address = data.address,
                     crop_id = data.crop_id.getOrNull(i) ?: data.crop_id.lastOrNull(),
                     variety = data.variety.getOrNull(i) ?: data.variety.lastOrNull(),

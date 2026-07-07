@@ -52,7 +52,7 @@ class DocumentRepository {
     // ── TEMP FORM 1 ─────────────────────────────────────────
     suspend fun insertTempForm1Batch(forms: List<TempForm1>): Result<Unit> {
         return try {
-            db["temp form 1"].insert(forms)
+            db["temp_form_1"].insert(forms)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -61,7 +61,7 @@ class DocumentRepository {
 
     suspend fun getAllTempForm1Records(): Result<List<TempForm1>> {
         return try {
-            val response = db["temp form 1"]
+            val response = db["temp_form_1"]
                 .select()
                 .decodeList<TempForm1>()
             Result.success(response)
