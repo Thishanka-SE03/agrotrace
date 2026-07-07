@@ -22,11 +22,19 @@ import java.io.File
 
 @Serializable
 data class ExtractionResult(
+    val document_type: String,
     val lot_no_for_seeds: String? = null,
     val land_address: String? = null,
     val transplanted_date: String? = null,
-    val seed_act_registration_no: String? = null,
-    val form_date: String? = null
+    val form_date: String? = null,
+    val see_act_registration_no: String? = null,
+    val farmer_name: String? = null,
+    val contact_no: String? = null,
+    val address: String? = null,
+    val crop_id: List<String?> = emptyList(),
+    val variety: List<String?> = emptyList(),
+    val land_area: List<String?> = emptyList(),
+    val quantity_of_seeds_used: List<String?> = emptyList()
 )
 
 class ExtractionActivity : AppCompatActivity() {
@@ -136,11 +144,13 @@ class ExtractionActivity : AppCompatActivity() {
                 result.onSuccess { data ->
                     extractedData = data
                     tvResults.text = """
-                        Lot No: ${data.lot_no_for_seeds ?: "Not found"}
-                        Address: ${data.land_address ?: "Not found"}
-                        Transplanted: ${data.transplanted_date ?: "Not found"}
-                        Form Date: ${data.form_date ?: "Not found"}
-                        Reg No: ${data.seed_act_registration_no ?: "Not found"}
+                        Lot No: ${data.lot_no_for_seeds ?: "N/A"}
+                        Farmer: ${data.farmer_name ?: "N/A"}
+                        Land Address: ${data.land_address ?: "N/A"}
+                        Transplanted: ${data.transplanted_date ?: "N/A"}
+                        Form Date: ${data.form_date ?: "N/A"}
+                        Reg No: ${data.see_act_registration_no ?: "N/A"}
+                        Address: ${data.address ?: "N/A"}
                     """.trimIndent()
                     tvStatus.text = "✅ Extraction complete"
                     btnSave.visibility = View.VISIBLE
@@ -158,32 +168,72 @@ class ExtractionActivity : AppCompatActivity() {
         val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
         
         val prompt = """
-            Analyze the provided image of a Land Approval Form and extract the following fields.
+            You are an expert document understanding AI specializing in extracting structured data from Sinhala agricultural documents.
             
-            Sinhala Label -> JSON Key
-            බීජ තොග අංකය -> lot_no_for_seeds
-            ගොවිපල පිහිටුවා ඇති ස්ථානය -> land_address
-            වගා කළ දිනය -> transplanted_date
-            බීජ පනත යටතේ ලියාපදිංචි අංකය -> seed_act_registration_no
-            දිනය (Form Date) -> form_date
+            Extract data for Document Type 1: Land Approval Form.
             
-            Extraction Rules:
-            1. If multiple records or a list exists, extract ONLY the first/main record. Do NOT concatenate multiple values.
-            2. For dates ('transplanted_date' and 'form_date'), convert to YYYY-MM-DD format (e.g., 20/11/2025 becomes 2025-11-20). This is CRITICAL.
-            3. For 'lot_no_for_seeds', extract only the first identifier found.
-            4. Locate the Sinhala labels even if there are minor OCR or formatting differences.
-            5. Trim unnecessary spaces and punctuation.
-            6. If a value cannot be determined, return null.
-            7. Do not guess missing values.
+            ----------------------------------------------------
+            FIELD MAPPING
+            ----------------------------------------------------
+            Extract these values from the CURRENT image provided:
             
-            Return ONLY valid JSON in this format:
+            lot_no_for_seeds -> Find බීජ තොග අංකය. Extract the value next to it. 
+               - CRITICAL: This is often a code like 'P/2/25/MIL/RG11/025' or 'P/1/25/HIL/RGII/061'.
+               - BE CAREFUL with '11' vs 'II'. Look closely at the font. 
+               - If it's in a table, take it from the first row of the table.
+            
+            land_address -> Value next to හෝ ගොවිපල පිහිටුවා ඇති ස්ථානය (Often found in the table header or first row).
+            
+            transplanted_date -> Value next to වගා කළ දිනය. 
+            
+            form_date -> Value next to දිනය (The date the form was signed, usually near the bottom or top center, NOT transplanted date).
+            
+            see_act_registration_no -> Value next to බීජ පනතේ ලියාපදිංචි අංකය.
+            
+            contact_no -> Value next to දුරකථන අංකය.
+            
+            Farmer Details (Top Right Dotted area):
+            - The FIRST line inside the dotted area is farmer_name.
+            - All remaining lines inside that box belong to address. Combine with commas.
+            
+            ----------------------------------------------------
+            TABLE EXTRACTION (ARRAYS)
+            ----------------------------------------------------
+            The form contains a table. Extract EVERY visible row for these fields and return as JSON ARRAYS:
+            
+            crop_id -> ALL values under භෝගය column
+            variety -> ALL values under ප්‍රභේදය column
+            land_area -> ALL values under වපසරිය column
+            quantity_of_seeds_used -> ALL values under භාවිතා කල බීජ ප්‍රමාණය column
+            
+            ----------------------------------------------------
+            OUTPUT FORMAT
+            ----------------------------------------------------
+            Return ONLY valid JSON. No markdown, no notes.
+            
             {
-              "lot_no_for_seeds": "single_value",
-              "land_address": "single_value",
+              "document_type": "land_approval_form",
+              "lot_no_for_seeds": "string",
+              "land_address": "string",
               "transplanted_date": "YYYY-MM-DD",
-              "seed_act_registration_no": "single_value",
-              "form_date": "YYYY-MM-DD"
+              "form_date": "YYYY-MM-DD",
+              "see_act_registration_no": "string",
+              "farmer_name": "string",
+              "contact_no": "string",
+              "address": "string",
+              "crop_id": ["string"],
+              "variety": ["string"],
+              "land_area": ["string"],
+              "quantity_of_seeds_used": ["string"]
             }
+            
+            ----------------------------------------------------
+            EXTRACTION RULES
+            ----------------------------------------------------
+            • OCR PRECISION: Pay extremely close attention to alphanumeric codes (Lot numbers). Do not confuse '1' (one) with 'I' (capital i).
+            • NO MEMORY: Extract only what you see in the current image. Do not use values from any previous examples.
+            • Dates: Convert to YYYY-MM-DD format.
+            • If a value is missing, return null.
         """.trimIndent()
 
         return client.generateContent(prompt, bitmap).mapCatching { jsonString ->
@@ -205,66 +255,36 @@ class ExtractionActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            // 1. Ensure dependencies exist (Handle Foreign Key Constraints)
-            val lotNo = data.lot_no_for_seeds
-            val regNo = data.seed_act_registration_no
+            // Determine max rows from arrays
+            val rowCount = listOf(data.crop_id, data.variety, data.land_area, data.quantity_of_seeds_used)
+                .maxOf { it.size }
             
-            if (lotNo != null && regNo != null) {
-                // First ensure the registration exists in seed_act_registrations
-                repository.ensureRegistrationExists(regNo).onFailure { e ->
-                    withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
-                        btnSave.isEnabled = true
-                        tvStatus.text = "❌ Failed to register Seed Act No: ${e.message}"
-                        Log.e("Supabase", "Registration insertion failed", e)
-                    }
-                    return@launch
-                }
-
-                // Then ensure the lot number exists in seed_act_lot_no
-                repository.ensureSeedLotNoExists(lotNo, regNo).onFailure { e ->
-                    withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
-                        btnSave.isEnabled = true
-                        tvStatus.text = "❌ Failed to register Lot No: ${e.message}"
-                        Log.e("Supabase", "Lot registration failed", e)
-                    }
-                    return@launch
-                }
-            } else if (lotNo != null) {
-                // Handle case where regNo might be null but lotNo is present
-                val effectiveRegNo = "N/A"
-                repository.ensureRegistrationExists(effectiveRegNo)
-                repository.ensureSeedLotNoExists(lotNo, effectiveRegNo).onFailure { e ->
-                    withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
-                        btnSave.isEnabled = true
-                        tvStatus.text = "❌ Failed to register Lot No (N/A): ${e.message}"
-                    }
-                    return@launch
-                }
+            val forms = (0 until rowCount).map { i ->
+                TempForm1(
+                    lot_no_for_seeds = data.lot_no_for_seeds,
+                    land_address = data.land_address,
+                    transplanted_date = data.transplanted_date,
+                    form_date = data.form_date,
+                    see_act_registration_no = data.see_act_registration_no,
+                    farmer_name = data.farmer_name,
+                    contact_no = data.contact_no,
+                    address = data.address,
+                    crop_id = data.crop_id.getOrNull(i) ?: data.crop_id.lastOrNull(),
+                    variety = data.variety.getOrNull(i) ?: data.variety.lastOrNull(),
+                    land_area = data.land_area.getOrNull(i) ?: data.land_area.lastOrNull(),
+                    quantity_of_seeds_used = data.quantity_of_seeds_used.getOrNull(i) ?: data.quantity_of_seeds_used.lastOrNull()
+                )
             }
 
-            // 2. Map to Database Model
-            val lotNoChecked = lotNo ?: "MISSING_LOT"
-            val form = LandApprovalForm(
-                lot_no_for_seeds = lotNoChecked,
-                land_address = data.land_address,
-                transplanted_date = data.transplanted_date,
-                form_date = data.form_date,
-                form_id = 1
-            )
-
-            // 3. Save to database
-            repository.insertLandApprovalForm(form).onSuccess { docId ->
+            // Save all records to database table "temp form 1"
+            repository.insertTempForm1Batch(forms).onSuccess {
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
                     btnSave.isEnabled = true
-                    tvStatus.text = "✅ Saved to Supabase! (ID: ${docId.take(8)}...)"
+                    tvStatus.text = "✅ Saved ${forms.size} records to Supabase!"
                     btnSave.visibility = View.GONE
                     btnRetry.visibility = View.GONE
 
-                    // Navigate to results after a brief pause
                     launch {
                         kotlinx.coroutines.delay(1500)
                         ResultsActivity.start(this@ExtractionActivity)

@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var btnScan: Button
+    private lateinit var btnForm1: Button
     private lateinit var btnHistory: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,10 +28,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        btnScan = findViewById(R.id.btnScan)
+        btnForm1 = findViewById(R.id.btnForm1)
         btnHistory = findViewById(R.id.btnHistory)
 
-        btnScan.setOnClickListener {
+        btnForm1.setOnClickListener {
             startActivity(Intent(this, ScannerActivity::class.java))
         }
 

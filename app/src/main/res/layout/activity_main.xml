@@ -8,65 +8,114 @@
     android:background="#F5F5F5"
     android:padding="24dp">
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="60dp"
-        android:contentDescription="App logo"
-        android:src="@android:drawable/ic_menu_camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#1976D2" />
-
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Document Scanner"
+        android:text="AgroTrace"
         android:textColor="#212121"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="Scan documents • Extract text • Store securely"
-        android:textColor="#757575"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
-
-    <Button
-        android:id="@+id/btnScan"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="48dp"
-        android:text="📷  Start Scanning"
-        android:textSize="18sp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/btnHistory"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnForm1"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:text="Scan Document Type 1\n(Land Approval Form)"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnForm2"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 2\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <Button
+                android:id="@+id/btnForm3"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 3\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <Button
+                android:id="@+id/btnForm4"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 4\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <Button
+                android:id="@+id/btnForm5"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 5\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <Button
+                android:id="@+id/btnForm6"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 6\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <Button
+                android:id="@+id/btnForm7"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:text="Scan Document Type 7\n(Coming Soon)"
+                android:textSize="16sp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btnHistory"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="56dp"
         android:text="📋  View History"
         android:textSize="18sp"
         style="@style/Widget.Material3.Button.OutlinedButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnScan" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

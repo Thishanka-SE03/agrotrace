@@ -29,23 +29,19 @@ data class DocumentRecord(
 )
 
 @Serializable
-data class LandApprovalForm(
-    val lot_no_for_seeds: String,
+data class TempForm1(
+    val lot_no_for_seeds: String? = null,
     val land_address: String? = null,
     val transplanted_date: String? = null,
     val form_date: String? = null,
-    val form_id: Long? = 1
-)
-
-@Serializable
-data class SeedActLotNo(
-    val lot_no: String,
-    val seed_act_registration_no: String
-)
-
-@Serializable
-data class SeedActRegistration(
-    val seed_act_no: String
+    val see_act_registration_no: String? = null,
+    val farmer_name: String? = null,
+    val contact_no: String? = null,
+    val address: String? = null,
+    val crop_id: String? = null,
+    val variety: String? = null,
+    val land_area: String? = null,
+    val quantity_of_seeds_used: String? = null
 )
 
 // Repository for all database operations
@@ -53,34 +49,22 @@ class DocumentRepository {
 
     private val db = Supabase.client.postgrest
 
-    // ── SEED ACT REGISTRATION ───────────────────────────────
-    suspend fun ensureRegistrationExists(regNo: String): Result<Unit> {
+    // ── TEMP FORM 1 ─────────────────────────────────────────
+    suspend fun insertTempForm1Batch(forms: List<TempForm1>): Result<Unit> {
         return try {
-            db["seed_act_registrations"].upsert(SeedActRegistration(regNo))
+            db["temp form 1"].insert(forms)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    // ── SEED ACT LOT NO ─────────────────────────────────────
-    suspend fun ensureSeedLotNoExists(lotNo: String, regNo: String): Result<Unit> {
+    suspend fun getAllTempForm1Records(): Result<List<TempForm1>> {
         return try {
-            // Upsert (Insert if not exists)
-            db["seed_act_lot_no"].upsert(SeedActLotNo(lotNo, regNo))
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // ── LAND APPROVAL FORM ──────────────────────────────────
-    suspend fun insertLandApprovalForm(form: LandApprovalForm): Result<String> {
-        return try {
-            val response = db["land_approval_form"]
-                .insert(form) { select() }
-                .decodeSingle<LandApprovalForm>()
-            Result.success(response.lot_no_for_seeds)
+            val response = db["temp form 1"]
+                .select()
+                .decodeList<TempForm1>()
+            Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
         }
