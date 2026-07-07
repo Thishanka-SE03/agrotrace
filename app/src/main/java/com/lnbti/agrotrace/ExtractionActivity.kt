@@ -37,16 +37,36 @@ data class ExtractionResult(
     val quantity_of_seeds_used: List<String?> = emptyList()
 )
 
+@Serializable
+data class CropRegistrationResult(
+    val document_type: String,
+    val registration_no: String? = null,
+    val form_no: String? = null,
+    val seed_act_registration_no: String? = null,
+    val farmer_registration_no: String? = null,
+    val date: String? = null,
+    val name_of_seed_producer: String? = null,
+    val address_of_seed_producer: String? = null,
+    val field_no: List<String?> = emptyList(),
+    val crop_grown_in_last_two_seasons: List<String?> = emptyList(),
+    val harvest_date: List<String?> = emptyList(),
+    val payment_no: String? = null,
+    val payment_amount: String? = null,
+    val registration_officer: String? = null
+)
+
 class ExtractionActivity : AppCompatActivity() {
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
     private var extractedData: ExtractionResult? = null
+    private var cropRegData: CropRegistrationResult? = null
+    private var currentDocType: Int = 1
 
     companion object {
         private const val EXTRA_IMAGE_FILE = "extra_image_file"
+        private const val EXTRA_DOC_TYPE = "extra_doc_type"
 
-        fun start(context: AppCompatActivity, bitmap: Bitmap, imageFileName: String) {
-            // Save bitmap to a temp file that the next activity can read
+        fun start(context: AppCompatActivity, bitmap: Bitmap, imageFileName: String, docType: Int = 1) {
             val file = File(context.cacheDir, "extraction_${imageFileName}")
             file.outputStream().use { out ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
@@ -55,6 +75,7 @@ class ExtractionActivity : AppCompatActivity() {
             context.startActivity(
                 android.content.Intent(context, ExtractionActivity::class.java).apply {
                     putExtra(EXTRA_IMAGE_FILE, file.absolutePath)
+                    putExtra(EXTRA_DOC_TYPE, docType)
                 }
             )
         }
@@ -76,6 +97,8 @@ class ExtractionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_extraction)
+
+        currentDocType = intent.getIntExtra(EXTRA_DOC_TYPE, 1)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val bars = insets.getInsets(
@@ -120,7 +143,7 @@ class ExtractionActivity : AppCompatActivity() {
         btnSave.visibility = View.GONE
         btnRetry.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
-        tvStatus.text = "🔍 Extracting text with Gemini AI (Sinhala Support)..."
+        tvStatus.text = "🔍 Extracting text with Gemini AI..."
         tvResults.text = ""
 
         lifecycleScope.launch {
@@ -135,39 +158,15 @@ class ExtractionActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // Extract structured data from the document using Gemini
-            val result = extractLandApprovalForm(bitmap)
-
-            withContext(Dispatchers.Main) {
-                progressBar.visibility = View.GONE
-                
-                result.onSuccess { data ->
-                    extractedData = data
-                    tvResults.text = """
-                        Farmer: ${data.farmer_name ?: "N/A"}
-                        Reg No: ${data.see_act_registration_no ?: "N/A"}
-                        Form Date: ${data.form_date ?: "N/A"}
-                        Address: ${data.address ?: "N/A"}
-                        
-                        --- Table Records Found: ${data.crop_id.size} ---
-                        First Lot: ${data.lot_no_for_seeds.firstOrNull() ?: "N/A"}
-                        First Date: ${data.transplanted_date.firstOrNull() ?: "N/A"}
-                    """.trimIndent()
-                    tvStatus.text = "✅ Extraction complete"
-                    btnSave.visibility = View.VISIBLE
-                }.onFailure { e ->
-                    tvResults.text = "❌ Failed to parse response: ${e.message}"
-                    tvStatus.text = "❌ Extraction failed"
-                }
-                
-                btnRetry.visibility = View.VISIBLE
+            if (currentDocType == 1) {
+                extractType1(bitmap)
+            } else {
+                extractType2(bitmap)
             }
         }
     }
 
-    private suspend fun extractLandApprovalForm(bitmap: Bitmap): Result<ExtractionResult> {
-        val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
-        
+    private suspend fun extractType1(bitmap: Bitmap) {
         val prompt = """
             You are an expert document understanding AI. Extract structured data from this Land Approval Form.
             
@@ -187,28 +186,15 @@ class ExtractionActivity : AppCompatActivity() {
             The form has a main table. Extract EVERY row. Even if some values are repeated, include them in the array for each row.
             
             lot_no_for_seeds -> Values under භාවිතා කළ බීජ තොග අංකය column.
-               - CRITICAL: Read row by row. Each row has a different lot number (e.g. 'P/2/25/MIL/RGII/025', 'P/1/25/HIL/RGII/061', etc).
-               - Do NOT confuse '11' with 'II'. 
-            
             land_address -> Values under හෝ ගොවිපල පිහිටුවා ඇති ස්ථානය column.
-            
             transplanted_date -> Values under වගා කළ දිනය column. Convert to YYYY-MM-DD.
-            
             contact_no -> Values under දුරකථන අංකය column.
-            
             crop_id -> Values under භෝගය column.
-            
             variety -> Values under ප්‍රභේදය column.
-            
             land_area -> Values under වපසරිය column.
-            
             quantity_of_seeds_used -> Values under භාවිතා කළ බීජ ප්‍රමාණය column.
             
-            ----------------------------------------------------
-            OUTPUT FORMAT
-            ----------------------------------------------------
             Return ONLY valid JSON.
-            
             {
               "document_type": "land_approval_form",
               "see_act_registration_no": "string",
@@ -224,36 +210,128 @@ class ExtractionActivity : AppCompatActivity() {
               "land_area": ["string"],
               "quantity_of_seeds_used": ["string"]
             }
-            
-            ----------------------------------------------------
-            RULES
-            ----------------------------------------------------
-            • Ensure all arrays have the SAME length (one entry per table row).
-            • If a value is missing in a row, use null in the array.
-            • Preserve Sinhala and English text exactly.
-            • No Markdown, no notes.
         """.trimIndent()
 
-        return client.generateContent(prompt, bitmap).mapCatching { jsonString ->
-            // Handle potential markdown formatting in Gemini response
-            val cleanJson = jsonString.trim()
-                .removeSurrounding("```json", "```")
-                .removeSurrounding("```")
-                .trim()
-            
-            json.decodeFromString<ExtractionResult>(cleanJson)
+        val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
+        client.generateContent(prompt, bitmap).onSuccess { jsonString ->
+            val cleanJson = cleanJsonResponse(jsonString)
+            try {
+                extractedData = json.decodeFromString<ExtractionResult>(cleanJson)
+                withContext(Dispatchers.Main) {
+                    displayType1Results(extractedData!!)
+                }
+            } catch (e: Exception) {
+                handleError("Failed to parse response: ${e.message}")
+            }
+        }.onFailure { e ->
+            handleError("Extraction failed: ${e.message}")
         }
+    }
+
+    private suspend fun extractType2(bitmap: Bitmap) {
+        val prompt = """
+            You are an expert document understanding AI specializing in extracting structured data from Sinhala agricultural documents.
+            Extract data for Document Type 2: Crop Registration for Seed Certification Form.
+            Return ONLY valid JSON. No markdown, no notes.
+            
+            {
+              "document_type": "crop_registration_form",
+              "registration_no": "Value next to ලියාපදිංචි අංකය",
+              "form_no": "Value printed next to No. (top-right)",
+              "seed_act_registration_no": "Value next to Seed Act Registration No",
+              "farmer_registration_no": "Value next to ලියාපදිංචි අංකය (farmer registration)",
+              "date": "Value next to දිනය",
+              "name_of_seed_producer": "First line in Name and Address of Seed Producer section",
+              "address_of_seed_producer": "Remaining lines in Name and Address section, combined with commas",
+              "field_no": ["Values under Field No/Name column"],
+              "crop_grown_in_last_two_seasons": ["Values under Crops grown during last two seasons column"],
+              "harvest_date": ["Values under Approx. date of harvest column"],
+              "payment_no": "Value under Payments Table No column",
+              "payment_amount": "Value under Payments Table Amount column",
+              "registration_officer": "Designation or office name from seal/stamp near bottom"
+            }
+        """.trimIndent()
+
+        val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
+        client.generateContent(prompt, bitmap).onSuccess { jsonString ->
+            val cleanJson = cleanJsonResponse(jsonString)
+            try {
+                cropRegData = json.decodeFromString<CropRegistrationResult>(cleanJson)
+                withContext(Dispatchers.Main) {
+                    displayType2Results(cropRegData!!)
+                }
+            } catch (e: Exception) {
+                handleError("Failed to parse response: ${e.message}")
+            }
+        }.onFailure { e ->
+            handleError("Extraction failed: ${e.message}")
+        }
+    }
+
+    private fun cleanJsonResponse(jsonString: String): String {
+        return jsonString.trim()
+            .removeSurrounding("```json", "```")
+            .removeSurrounding("```")
+            .trim()
+    }
+
+    private suspend fun handleError(message: String) {
+        withContext(Dispatchers.Main) {
+            progressBar.visibility = View.GONE
+            tvStatus.text = "❌ Error"
+            tvResults.text = message
+            btnRetry.visibility = View.VISIBLE
+        }
+    }
+
+    private fun displayType1Results(data: ExtractionResult) {
+        progressBar.visibility = View.GONE
+        tvStatus.text = "✅ Extraction complete"
+        tvResults.text = """
+            Farmer: ${data.farmer_name ?: "null"}
+            Reg No: ${data.see_act_registration_no ?: "null"}
+            Form Date: ${data.form_date ?: "null"}
+            Address: ${data.address ?: "null"}
+            
+            --- Table Records Found: ${data.crop_id.size} ---
+            First Lot: ${data.lot_no_for_seeds.firstOrNull() ?: "null"}
+            First Date: ${data.transplanted_date.firstOrNull() ?: "null"}
+        """.trimIndent()
+        btnSave.visibility = View.VISIBLE
+        btnRetry.visibility = View.VISIBLE
+    }
+
+    private fun displayType2Results(data: CropRegistrationResult) {
+        progressBar.visibility = View.GONE
+        tvStatus.text = "✅ Extraction complete (Preview Only)"
+        tvResults.text = """
+            Reg No: ${data.registration_no ?: "null"}
+            Form No: ${data.form_no ?: "null"}
+            Seed Producer: ${data.name_of_seed_producer ?: "null"}
+            Date: ${data.date ?: "null"}
+            
+            --- Table Entries: ${data.field_no.size} ---
+            First Field: ${data.field_no.firstOrNull() ?: "null"}
+            
+            --- Payment ---
+            Payment No: ${data.payment_no ?: "null"}
+            Amount: ${data.payment_amount ?: "null"}
+            
+            Officer: ${data.registration_officer ?: "null"}
+        """.trimIndent()
+        btnSave.visibility = View.GONE // As requested, don't save type 2 for now
+        btnRetry.visibility = View.VISIBLE
     }
 
     private fun saveToSupabase() {
         val data = extractedData ?: return
-        
+        if (currentDocType != 1) return
+
         tvStatus.text = "💾 Saving to Supabase..."
         btnSave.isEnabled = false
         progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            // Determine max rows from arrays
             val rowCount = listOf(
                 data.lot_no_for_seeds,
                 data.land_address,
@@ -281,7 +359,6 @@ class ExtractionActivity : AppCompatActivity() {
                 )
             }
 
-            // Save all records to database table "temp form 1"
             repository.insertTempForm1Batch(forms).onSuccess {
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
@@ -301,7 +378,6 @@ class ExtractionActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     btnSave.isEnabled = true
                     tvStatus.text = "❌ Save failed: ${e.message}"
-                    Log.e("Supabase", "Insert failed", e)
                 }
             }
         }
@@ -309,7 +385,6 @@ class ExtractionActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Clean up temp files
         ExtractionState.imageFile?.delete()
     }
 }
