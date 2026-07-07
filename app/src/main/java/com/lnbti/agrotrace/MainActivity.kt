@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var btnForm1: Button
+    private lateinit var btnForm2: Button
     private lateinit var btnHistory: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +30,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnForm1 = findViewById(R.id.btnForm1)
+        btnForm2 = findViewById(R.id.btnForm2)
         btnHistory = findViewById(R.id.btnHistory)
 
         btnForm1.setOnClickListener {
-            startActivity(Intent(this, ScannerActivity::class.java))
+            startScanner(1)
+        }
+
+        btnForm2.setOnClickListener {
+            startScanner(2)
         }
 
         btnHistory.setOnClickListener {
@@ -41,6 +47,12 @@ class MainActivity : AppCompatActivity() {
 
         // Check Supabase connection on startup
         checkConnection()
+    }
+
+    private fun startScanner(docType: Int) {
+        val intent = Intent(this, ScannerActivity::class.java)
+        intent.putExtra("DOC_TYPE", docType)
+        startActivity(intent)
     }
 
     private fun checkConnection() {
