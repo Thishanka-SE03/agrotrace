@@ -49,10 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginBottom="12dp"
-                android:enabled="false"
-                android:text="Scan Document Type 2\n(Coming Soon)"
-                android:textSize="16sp"
-                style="@style/Widget.Material3.Button.TonalButton" />
+                android:text="Scan Document Type 2\n(Crop Registration Form)"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/btnForm3"
