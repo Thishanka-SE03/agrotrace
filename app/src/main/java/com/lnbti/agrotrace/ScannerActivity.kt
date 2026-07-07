@@ -153,7 +153,8 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun navigateToExtraction(bitmap: Bitmap, imageFileName: String) {
-        ExtractionActivity.start(this, bitmap, imageFileName)
+        val docType = intent.getIntExtra("DOC_TYPE", 1)
+        ExtractionActivity.start(this, bitmap, imageFileName, docType)
         finish()
     }
 }
