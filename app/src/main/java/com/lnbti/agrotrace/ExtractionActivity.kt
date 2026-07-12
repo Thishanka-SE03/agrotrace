@@ -70,12 +70,39 @@ data class InspectionFormResult(
     val inspection_round: JsonElement? = null
 )
 
+@Serializable
+data class FinalInspectionResult(
+    val document_type: String,
+    val harvest_inspect_no: String? = null,
+    val farmer_registration_no: String? = null,
+    val final_inspection_date: String? = null,
+    val extent_accepted: String? = null,
+    val extent_rejected: String? = null,
+    val estimated_seed_yield: String? = null,
+    val other_distinguish_varieties: List<String?> = emptyList(),
+    val pest_and_diseases: List<String?> = emptyList(),
+    val remarks: List<String?> = emptyList(),
+    val decision: List<String?> = emptyList(),
+    val officer_sign: OfficerSign? = null
+)
+
+@Serializable
+data class OfficerSign(
+    val name: String? = null,
+    val designation: String? = null,
+    val organization: String? = null,
+    val department: String? = null,
+    val office: String? = null,
+    val full_text: String? = null
+)
+
 class ExtractionActivity : AppCompatActivity() {
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
     private var extractedData: ExtractionResult? = null
     private var cropRegData: CropRegistrationResult? = null
     private var inspectionData: InspectionFormResult? = null
+    private var finalInspectionData: FinalInspectionResult? = null
     private var currentDocType: Int = 1
 
     companion object {
@@ -178,8 +205,10 @@ class ExtractionActivity : AppCompatActivity() {
                 extractType1(bitmap)
             } else if (currentDocType == 2) {
                 extractType2(bitmap)
-            } else {
+            } else if (currentDocType == 3) {
                 extractType3(bitmap)
+            } else {
+                extractType4(bitmap)
             }
         }
     }
@@ -408,6 +437,81 @@ class ExtractionActivity : AppCompatActivity() {
             Round: $roundDisplay
             
             Observation: ${data.observation ?: "null"}
+        """.trimIndent()
+        btnSave.visibility = View.GONE
+        btnRetry.visibility = View.VISIBLE
+    }
+
+    private suspend fun extractType4(bitmap: Bitmap) {
+        val prompt = """
+            You are an expert document understanding AI. Extract structured data from this Final Field Inspection Report.
+            Return ONLY valid JSON. No markdown, no notes.
+            
+            {
+              "document_type": "final_field_inspection_report",
+              "harvest_inspect_no": "Value next to No. (top-right corner)",
+              "farmer_registration_no": "Value next to Registration No",
+              "final_inspection_date": "Value next to Date (Convert to YYYY-MM-DD)",
+              "extent_accepted": "Value next to Extent Accepted (Ac.)",
+              "extent_rejected": "Value next to Extent Rejected (Ac.)",
+              "estimated_seed_yield": "Value next to Estimated Seed Yield (Bu/Kg)",
+              "other_distinguish_varieties": ["Values from Other Distinguish Varieties column"],
+              "pest_and_diseases": ["Values from Pest & Diseases column"],
+              "remarks": ["Values from Remarks column, join multiline entries"],
+              "decision": ["Values from Decision (Accepted or Rejected) column"],
+              "officer_sign": {
+                "name": "Officer name from seal/stamp",
+                "designation": "Designation from seal/stamp",
+                "organization": "Organization from seal/stamp",
+                "department": "Department from seal/stamp",
+                "office": "Office/Location from seal/stamp",
+                "full_text": "Complete text found in the seal"
+              }
+            }
+            
+            ----------------------------------------------------
+            RULES
+            ----------------------------------------------------
+            • Extent accepted/rejected: Include units if written (e.g., '1 AC').
+            • Decision: Must be exactly 'Accepted' or 'Rejected' if readable.
+            • Officer seal: Extract all readable text from the stamp near the bottom.
+            • If a value is missing, return null.
+        """.trimIndent()
+
+        val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
+        client.generateContent(prompt, bitmap).onSuccess { jsonString ->
+            val cleanJson = cleanJsonResponse(jsonString)
+            try {
+                finalInspectionData = json.decodeFromString<FinalInspectionResult>(cleanJson)
+                withContext(Dispatchers.Main) {
+                    displayType4Results(finalInspectionData!!)
+                }
+            } catch (e: Exception) {
+                handleError("Failed to parse response: ${e.message}")
+            }
+        }.onFailure { e ->
+            handleError("Extraction failed: ${e.message}")
+        }
+    }
+
+    private fun displayType4Results(data: FinalInspectionResult) {
+        progressBar.visibility = View.GONE
+        tvStatus.text = "✅ Extraction complete (Preview Only)"
+        
+        tvResults.text = """
+            Harvest Inspect No: ${data.harvest_inspect_no ?: "null"}
+            Reg No: ${data.farmer_registration_no ?: "null"}
+            Date: ${data.final_inspection_date ?: "null"}
+            
+            Accepted: ${data.extent_accepted ?: "null"}
+            Rejected: ${data.extent_rejected ?: "null"}
+            Yield: ${data.estimated_seed_yield ?: "null"}
+            
+            --- Table Rows: ${data.remarks.size} ---
+            Decision: ${data.decision.firstOrNull() ?: "null"}
+            
+            Officer: ${data.officer_sign?.name ?: "null"}
+            Full Seal: ${data.officer_sign?.full_text ?: "null"}
         """.trimIndent()
         btnSave.visibility = View.GONE
         btnRetry.visibility = View.VISIBLE
