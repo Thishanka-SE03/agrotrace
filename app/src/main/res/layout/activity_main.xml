@@ -57,10 +57,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginBottom="12dp"
-                android:enabled="false"
-                android:text="Scan Document Type 3\n(Coming Soon)"
-                android:textSize="16sp"
-                style="@style/Widget.Material3.Button.TonalButton" />
+                android:text="Scan Document Type 3\n(Field Inspection Report)"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/btnForm4"

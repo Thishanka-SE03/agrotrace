@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var btnForm1: Button
     private lateinit var btnForm2: Button
+    private lateinit var btnForm3: Button
     private lateinit var btnHistory: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         btnForm1 = findViewById(R.id.btnForm1)
         btnForm2 = findViewById(R.id.btnForm2)
+        btnForm3 = findViewById(R.id.btnForm3)
         btnHistory = findViewById(R.id.btnHistory)
 
         btnForm1.setOnClickListener {
@@ -39,6 +41,10 @@ class MainActivity : AppCompatActivity() {
 
         btnForm2.setOnClickListener {
             startScanner(2)
+        }
+
+        btnForm3.setOnClickListener {
+            startScanner(3)
         }
 
         btnHistory.setOnClickListener {

@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
 @Serializable
@@ -55,11 +58,24 @@ data class CropRegistrationResult(
     val registration_officer: String? = null
 )
 
+@Serializable
+data class InspectionFormResult(
+    val document_type: String,
+    val inspection_no: String? = null,
+    val inspection_date: String? = null,
+    val seed_act_registration_no: String? = null,
+    val farmer_registration_no: String? = null,
+    val field_no: String? = null,
+    val observation: String? = null,
+    val inspection_round: JsonElement? = null
+)
+
 class ExtractionActivity : AppCompatActivity() {
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
     private var extractedData: ExtractionResult? = null
     private var cropRegData: CropRegistrationResult? = null
+    private var inspectionData: InspectionFormResult? = null
     private var currentDocType: Int = 1
 
     companion object {
@@ -160,8 +176,10 @@ class ExtractionActivity : AppCompatActivity() {
 
             if (currentDocType == 1) {
                 extractType1(bitmap)
-            } else {
+            } else if (currentDocType == 2) {
                 extractType2(bitmap)
+            } else {
+                extractType3(bitmap)
             }
         }
     }
@@ -320,6 +338,78 @@ class ExtractionActivity : AppCompatActivity() {
             Officer: ${data.registration_officer ?: "null"}
         """.trimIndent()
         btnSave.visibility = View.GONE // As requested, don't save type 2 for now
+        btnRetry.visibility = View.VISIBLE
+    }
+
+    private suspend fun extractType3(bitmap: Bitmap) {
+        val prompt = """
+            You are an expert document understanding AI. Extract structured data from this Field/Lot Inspection Report.
+            Return ONLY valid JSON. No markdown, no notes.
+            
+            {
+              "document_type": "inspection_form",
+              "inspection_no": "Value next to No. (top-right corner)",
+              "inspection_date": "Value next to Date",
+              "seed_act_registration_no": "Value next to Seed Act Registration No",
+              "farmer_registration_no": "Value next to Registration No (NOT Seed Act Reg No)",
+              "field_no": "Value next to Field No/Name",
+              "observation": "ALL text under Observations / Instructions, joined into a single string with spaces",
+              "inspection_round": "Determine which oval checkbox is marked (1st Inspection, 2nd Inspection, 3rd Inspection, 1st Re-inspection, 2nd Re-inspection, 3rd Re-inspection). Return as string, or array if multiple are marked."
+            }
+            
+            ----------------------------------------------------
+            RULES
+            ----------------------------------------------------
+            • Read handwritten text carefully.
+            • Join multiline observations into one readable sentence.
+            • If a value is missing, return null.
+        """.trimIndent()
+
+        val client = GeminiClient(BuildConfig.GEMINI_API_KEY)
+        client.generateContent(prompt, bitmap).onSuccess { jsonString ->
+            val cleanJson = cleanJsonResponse(jsonString)
+            try {
+                inspectionData = json.decodeFromString<InspectionFormResult>(cleanJson)
+                withContext(Dispatchers.Main) {
+                    displayType3Results(inspectionData!!)
+                }
+            } catch (e: Exception) {
+                handleError("Failed to parse response: ${e.message}")
+            }
+        }.onFailure { e ->
+            handleError("Extraction failed: ${e.message}")
+        }
+    }
+
+    private fun displayType3Results(data: InspectionFormResult) {
+        progressBar.visibility = View.GONE
+        tvStatus.text = "✅ Extraction complete (Preview Only)"
+        
+        val roundDisplay = when {
+            data.inspection_round == null -> "null"
+            data.inspection_round.toString().startsWith("[") -> {
+                try {
+                    data.inspection_round.jsonArray.joinToString(", ") { it.jsonPrimitive.content }
+                } catch (_: Exception) { data.inspection_round.toString() }
+            }
+            else -> {
+                try {
+                    data.inspection_round.jsonPrimitive.content
+                } catch (_: Exception) { data.inspection_round.toString() }
+            }
+        }
+
+        tvResults.text = """
+            Inspection No: ${data.inspection_no ?: "null"}
+            Date: ${data.inspection_date ?: "null"}
+            Reg No (Seed Act): ${data.seed_act_registration_no ?: "null"}
+            Reg No (Farmer): ${data.farmer_registration_no ?: "null"}
+            Field No: ${data.field_no ?: "null"}
+            Round: $roundDisplay
+            
+            Observation: ${data.observation ?: "null"}
+        """.trimIndent()
+        btnSave.visibility = View.GONE
         btnRetry.visibility = View.VISIBLE
     }
 
