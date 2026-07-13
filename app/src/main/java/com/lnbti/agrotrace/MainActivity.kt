@@ -37,6 +37,11 @@ class MainActivity : AppCompatActivity() {
         btnForm4 = findViewById(R.id.btnForm4)
         btnHistory = findViewById(R.id.btnHistory)
 
+        findViewById<Button>(R.id.btnNewScan).setOnClickListener {
+            // Optional: Show a hint to select form below
+            Toast.makeText(this, "Please select a document type below", Toast.LENGTH_SHORT).show()
+        }
+
         btnForm1.setOnClickListener {
             startScanner(1)
         }

@@ -8,139 +8,200 @@
     android:background="@color/background"
     android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvTitle"
+    <!-- Subtle Grid for Dark Mode -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/grid_bg"
+        android:alpha="0.3"
+        app:tint="@color/outline" />
+
+    <LinearLayout
+        android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="AgroTrace"
-        android:textColor="@color/black"
-        android:textSize="32sp"
-        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ScrollView
-        android:layout_width="0dp"
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_leaf"
+            app:tint="@color/secondary" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="AGROTRACE"
+            android:textColor="@color/onBackground"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnNewScan"
+        style="@style/AppButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:text="New Scan"
+        android:enabled="false"
+        android:backgroundTint="#33757575"
+        android:textColor="@color/onSurfaceVariant"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDocTypes"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/btnHistory"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/outline"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomButtons"
+        app:layout_constraintTop_toBottomOf="@id/btnNewScan">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm1"
-                style="@style/AppButton.Outlined"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Document Type"
+                android:textColor="@color/onSurfaceVariant"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp" />
+
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:text="Scan Document Type 1\n(Land Approval Form)"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                app:icon="@drawable/ic_description"
-                app:iconSize="28dp"
-                app:iconPadding="16dp"
-                app:iconTint="@color/primary" />
+                android:layout_height="match_parent"
+                android:scrollbars="none">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm2"
-                style="@style/AppButton.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:text="Scan Document Type 2\n(Crop Registration Form)"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                app:icon="@drawable/ic_description"
-                app:iconSize="28dp"
-                app:iconPadding="16dp"
-                app:iconTint="@color/primary" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm3"
-                style="@style/AppButton.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:text="Scan Document Type 3\n(Field Inspection Report)"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                app:icon="@drawable/ic_description"
-                app:iconSize="28dp"
-                app:iconPadding="16dp"
-                app:iconTint="@color/primary" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnForm1"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Land Approval Form"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        app:icon="@drawable/ic_description"
+                        app:iconTint="@color/primary"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm4"
-                style="@style/AppButton.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:text="Scan Document Type 4\n(Final Field Inspection Report)"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                app:icon="@drawable/ic_description"
-                app:iconSize="28dp"
-                app:iconPadding="16dp"
-                app:iconTint="@color/primary" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnForm2"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Crop Registration Form"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        app:icon="@drawable/ic_description"
+                        app:iconTint="@color/primary"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm5"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:enabled="false"
-                android:text="Scan Document Type 5\n(Coming Soon)"
-                android:textAllCaps="false"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnForm3"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Field Inspection Report"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        app:icon="@drawable/ic_description"
+                        app:iconTint="@color/primary"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm6"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:enabled="false"
-                android:text="Scan Document Type 6\n(Coming Soon)"
-                android:textAllCaps="false"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnForm4"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Final Field Inspection"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        app:icon="@drawable/ic_description"
+                        app:iconTint="@color/primary"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForm7"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:enabled="false"
-                android:text="Scan Document Type 7\n(Coming Soon)"
-                android:textAllCaps="false"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
+                    <!-- Disabled others -->
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Scan Document Type 5"
+                        android:enabled="false"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Scan Document Type 6"
+                        android:enabled="false"
+                        android:textAllCaps="false"
+                        android:gravity="start|center_vertical"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Button.Rounded" />
+
+                </LinearLayout>
+            </ScrollView>
         </LinearLayout>
-    </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnHistory"
-        style="@style/AppButton.Outlined"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="View History"
-        android:textAllCaps="false"
-        android:textColor="@color/primary"
-        app:icon="@drawable/ic_history"
-        app:iconTint="@color/primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <LinearLayout
+        android:id="@+id/bottomButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHistory"
+            style="@style/AppButton.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:text="View History"
+            app:icon="@drawable/ic_history"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettings"
+            style="@style/AppButton.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Scanner Settings"
+            android:enabled="false"
+            app:icon="@drawable/ic_settings"
+            app:iconGravity="textStart" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

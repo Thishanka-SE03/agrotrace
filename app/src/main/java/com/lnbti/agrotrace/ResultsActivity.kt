@@ -91,16 +91,16 @@ class ResultsActivity : AppCompatActivity() {
         val card = inflater.inflate(R.layout.item_document, container, false) as com.google.android.material.card.MaterialCardView
 
         card.findViewById<TextView>(R.id.tvFullName).text =
-            "Land Approval: ${doc.variety ?: "N/A"}"
+            "Land Approval Form"
 
         card.findViewById<TextView>(R.id.tvDate).text =
-            "Lot: ${doc.lot_no_for_seeds ?: "N/A"} | Date: ${doc.form_date ?: "N/A"}"
+            "${doc.lot_no_for_seeds ?: "N/A"} - ${doc.form_date ?: "N/A"}"
 
-        card.findViewById<TextView>(R.id.tvImageUrl).text = "Saved to Supabase"
+        card.findViewById<TextView>(R.id.tvImageUrl).text = "Stored in Journal"
 
-        // Delete button
-        card.findViewById<Button>(R.id.btnDelete).setOnClickListener {
-            Toast.makeText(this, "Batch deletion coming soon", Toast.LENGTH_SHORT).show()
+        // Share button
+        card.findViewById<View>(R.id.btnShare).setOnClickListener {
+            Toast.makeText(this, "Sharing feature coming soon", Toast.LENGTH_SHORT).show()
         }
 
         container.addView(card)

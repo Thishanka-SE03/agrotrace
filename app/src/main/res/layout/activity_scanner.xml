@@ -46,9 +46,8 @@
 
     <ImageView
         android:id="@+id/ivGuide"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="60dp"
+        android:layout_width="260dp"
+        android:layout_height="360dp"
         android:contentDescription="Document guide overlay"
         android:src="@drawable/scanner_frame"
         app:layout_constraintBottom_toTopOf="@id/btnScan"
@@ -59,30 +58,26 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnScan"
         style="@style/AppButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Scan Document"
         android:textAllCaps="false"
         app:icon="@drawable/ic_camera"
         app:iconTint="@color/white"
         app:layout_constraintBottom_toTopOf="@id/btnGallery"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="16dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGallery"
         style="@style/AppButton.Outlined"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Pick from Gallery"
+        android:text="Add from Gallery"
         android:textAllCaps="false"
         android:textColor="@color/primary"
         app:icon="@drawable/ic_photo_library"
         app:iconTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="32dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
