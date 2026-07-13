@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2E7D32</color>
-    <color name="primary_light">#81C784</color>
-    <color name="primary_dark">#1B5E20</color>
+    <color name="primary">#1B5E20</color> <!-- Dark Green -->
+    <color name="primary_light">#4C8C4A</color>
+    <color name="primary_dark">#003308</color>
     <color name="onPrimary">#FFFFFF</color>
-    <color name="secondary">#B8860B</color>
+    <color name="secondary">#2E7D32</color> <!-- Medium Green -->
     <color name="onSecondary">#FFFFFF</color>
 
-    <color name="background">#F5F5F5</color>
+    <color name="background">#F8F9FA</color>
     <color name="onBackground">#1C1B1F</color>
     <color name="surface">#FFFFFF</color>
     <color name="onSurface">#1C1B1F</color>
-    <color name="surfaceVariant">#E7E0EC</color>
-    <color name="onSurfaceVariant">#49454F</color>
-    <color name="outline">#79747E</color>
+    <color name="surfaceVariant">#F0F4F0</color>
+    <color name="onSurfaceVariant">#44474E</color>
+    <color name="outline">#C4C7C5</color>
+
+    <color name="doc_type_1">#8D6E63</color> <!-- Brown -->
+    <color name="doc_type_2">#5C6BC0</color> <!-- Indigo -->
+    <color name="doc_type_3">#66BB6A</color> <!-- Green -->
+    <color name="doc_type_4">#7E57C2</color> <!-- Purple -->
+    <color name="doc_type_5">#FFA726</color> <!-- Orange -->
+    <color name="doc_type_6">#42A5F5</color> <!-- Light Blue -->
+    <color name="doc_type_7">#EF5350</color> <!-- Red/Salmon -->
+
+    <color name="success">#2E7D32</color>
+    <color name="pending">#F9A825</color>
+    <color name="failed">#C62828</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="error">#B00020</color>
+    <color name="error">#B3261E</color>
 </resources>

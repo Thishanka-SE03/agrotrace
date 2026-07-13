@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -28,8 +29,8 @@ class ScannerActivity : AppCompatActivity() {
 
     private lateinit var scanner: GmsDocumentScanner
     private lateinit var tvStatus: TextView
-    private lateinit var btnScan: Button
-    private lateinit var btnGallery: Button
+    private lateinit var btnScan: View
+    private lateinit var btnGallery: View
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
