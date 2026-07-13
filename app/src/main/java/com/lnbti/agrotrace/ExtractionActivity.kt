@@ -163,8 +163,12 @@ class ExtractionActivity : AppCompatActivity() {
         btnRetry.visibility = View.GONE
 
         btnSave.setOnClickListener { saveToSupabase() }
-        btnRetry.setOnClickListener { startExtraction() }
+        btnRetry.setOnClickListener { 
+            // In the new UI, this is "Export as PDF"
+            Toast.makeText(this, "Export as PDF coming soon", Toast.LENGTH_SHORT).show()
+        }
         btnCancel.setOnClickListener { finish() }
+        findViewById<View>(R.id.btnClose).setOnClickListener { finish() }
 
         val imageFile = intent.getStringExtra(EXTRA_IMAGE_FILE)
         if (imageFile != null) {

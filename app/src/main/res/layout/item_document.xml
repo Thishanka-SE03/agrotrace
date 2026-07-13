@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/white"
-    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface"
+    app:cardElevation="0dp"
     app:strokeWidth="1dp"
-    app:strokeColor="#EEEEEE"
+    app:strokeColor="#DDDDDD"
     app:cardCornerRadius="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,29 +16,38 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <ImageView
-            android:id="@+id/ivThumbnail"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardThumbnail"
             android:layout_width="60dp"
             android:layout_height="80dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_description"
-            app:tint="@color/on_surface_variant"
-            android:background="#F0F0F0"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_description"
+                app:tint="@color/onSurfaceVariant"
+                android:background="#F0F0F0" />
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvFullName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Crop Registration"
+            android:text="Crop Reg - 2026-07-13"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/btnDelete"
-            app:layout_constraintStart_toEndOf="@id/ivThumbnail"
+            app:layout_constraintEnd_toStartOf="@id/btnShare"
+            app:layout_constraintStart_toEndOf="@id/cardThumbnail"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -46,9 +55,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="2026-103-07-13"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="13sp"
+            android:text="2026-102-07-13"
+            android:textColor="@color/onSurfaceVariant"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/tvFullName"
             app:layout_constraintStart_toStartOf="@id/tvFullName"
             app:layout_constraintTop_toBottomOf="@id/tvFullName" />
@@ -58,24 +67,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Saved"
-            android:textColor="@color/primary"
-            android:textSize="12sp"
+            android:text="Stored in Journal"
+            android:textColor="@color/onSurfaceVariant"
+            android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@id/tvFullName"
             app:layout_constraintTop_toBottomOf="@id/tvDate" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDelete"
-            style="@style/Widget.Material3.Button.IconButton"
+        <LinearLayout
+            android:id="@+id/btnShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconTint="#C62828"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_share"
+                app:tint="@color/onSurfaceVariant" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SHARE"
+                android:textColor="@color/onSurfaceVariant"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Hidden Delete and ID -->
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Hidden ID -->
         <TextView
             android:id="@+id/tvDocNumber"
             android:layout_width="0dp"

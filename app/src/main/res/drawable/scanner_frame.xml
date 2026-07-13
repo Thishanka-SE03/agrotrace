@@ -7,26 +7,31 @@
     <!-- Top Left -->
     <path
         android:strokeColor="@color/primary"
-        android:strokeWidth="4"
-        android:pathData="M 0,40 L 0,0 L 40,0" />
+        android:strokeWidth="6"
+        android:pathData="M 0,50 L 0,0 L 50,0" />
     <!-- Top Right -->
     <path
         android:strokeColor="@color/primary"
-        android:strokeWidth="4"
-        android:pathData="M 160,0 L 200,0 L 200,40" />
+        android:strokeWidth="6"
+        android:pathData="M 150,0 L 200,0 L 200,50" />
     <!-- Bottom Right -->
     <path
         android:strokeColor="@color/primary"
-        android:strokeWidth="4"
-        android:pathData="M 200,240 L 200,280 L 160,280" />
+        android:strokeWidth="6"
+        android:pathData="M 200,230 L 200,280 L 150,280" />
     <!-- Bottom Left -->
     <path
         android:strokeColor="@color/primary"
-        android:strokeWidth="4"
-        android:pathData="M 40,280 L 0,280 L 0,240" />
-    <!-- Center Line -->
+        android:strokeWidth="6"
+        android:pathData="M 50,280 L 0,280 L 0,230" />
+    <!-- Crosshair Horizontal -->
     <path
-        android:strokeColor="#33FFFFFF"
+        android:strokeColor="#44FFFFFF"
         android:strokeWidth="1"
         android:pathData="M 0,140 L 200,140" />
+    <!-- Crosshair Vertical -->
+    <path
+        android:strokeColor="#44FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M 100,0 L 100,280" />
 </vector>

@@ -12,25 +12,23 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scanned Documents"
-        android:textColor="@color/primary"
-        android:textSize="24sp"
+        android:layout_marginTop="8dp"
+        android:text="DOCUMENT HISTORY"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRefresh"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Refresh"
-        android:textAllCaps="false"
-        app:icon="@android:drawable/ic_menu_rotate"
-        app:iconTint="@color/primary"
+    <ImageView
+        android:id="@+id/btnCalendar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_calendar"
         app:layout_constraintBottom_toBottomOf="@id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvTitle" />
+        app:layout_constraintTop_toTopOf="@id/tvTitle"
+        app:tint="@color/onBackground" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -56,7 +54,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="No documents yet"
-        android:textColor="@color/on_surface_variant"
+        android:textColor="@color/onSurfaceVariant"
         android:textSize="18sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,15 +64,22 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
-        style="@style/AppButton"
-        android:layout_width="0dp"
+        style="@style/AppButton.Outlined"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Back to Menu"
-        android:textAllCaps="false"
+        android:textAllCaps="true"
         app:icon="@android:drawable/ic_menu_revert"
-        app:iconTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:iconTint="@color/outline"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Actual Refresh Hidden -->
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
