@@ -5,96 +5,132 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/background"
     android:padding="24dp">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="Extracting Text..."
-        android:textColor="#212121"
-        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressBar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/primary_light"
+        app:indicatorSize="64dp"
+        app:trackThickness="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-    <TextView
-        android:id="@+id/tvStatus"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="Processing with Gemini AI"
-        android:textColor="#757575"
-        android:textSize="16sp"
+        app:cardBackgroundColor="#EEEEEE"
+        app:cardCornerRadius="8dp"
+        app:strokeWidth="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar" />
+        app:layout_constraintTop_toBottomOf="@id/progressBar">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Processing with Gemini AI"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="14sp" />
+    </com.google.android.material.card.MaterialCardView>
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@id/btnSave"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvStatus">
+        app:layout_constraintTop_toBottomOf="@id/cardStatus">
 
-        <TextView
-            android:id="@+id/tvResults"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:padding="16dp"
-            android:text=""
-            android:textColor="#212121"
-            android:textSize="16sp" />
+            app:cardBackgroundColor="@color/white"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#DDDDDD">
+
+            <TextView
+                android:id="@+id/tvResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="10"
+                android:padding="16dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+        </com.google.android.material.card.MaterialCardView>
     </ScrollView>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSave"
+        style="@style/AppButton"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="💾  Save to Database"
-        android:textSize="16sp"
+        android:text="Save to Database"
+        android:textAllCaps="false"
+        app:icon="@drawable/ic_description"
+        app:iconTint="@color/white"
         app:layout_constraintBottom_toTopOf="@id/btnRetry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="12dp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRetry"
+        style="@style/AppButton.Outlined"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="🔄  Retry Extraction"
-        android:textSize="16sp"
-        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:text="Retry Extraction"
+        android:textAllCaps="false"
+        android:textColor="@color/primary"
+        app:icon="@android:drawable/ic_menu_rotate"
+        app:iconTint="@color/primary"
         app:layout_constraintBottom_toTopOf="@id/btnCancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="12dp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCancel"
+        style="@style/AppButton.Outlined"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="✖  Cancel"
-        android:textSize="16sp"
-        style="@style/Widget.Material3.Button.TextButton"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:textColor="#C62828"
+        app:strokeColor="#C62828"
+        app:icon="@android:drawable/ic_menu_close_clear_cancel"
+        app:iconTint="#C62828"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

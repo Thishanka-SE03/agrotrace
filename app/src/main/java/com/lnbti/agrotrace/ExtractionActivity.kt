@@ -129,7 +129,7 @@ class ExtractionActivity : AppCompatActivity() {
     }
 
     private val repository = DocumentRepository()
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: com.google.android.material.progressindicator.CircularProgressIndicator
     private lateinit var tvStatus: TextView
     private lateinit var tvResults: TextView
     private lateinit var btnSave: Button

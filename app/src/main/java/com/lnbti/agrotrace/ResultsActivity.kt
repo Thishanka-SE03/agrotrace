@@ -65,11 +65,11 @@ class ResultsActivity : AppCompatActivity() {
         container.removeAllViews()
 
         lifecycleScope.launch {
-            repository.getAllDocuments().onSuccess { documents ->
+            repository.getAllTempForm1Records().onSuccess { documents ->
                 withContext(Dispatchers.Main) {
                     if (documents.isEmpty()) {
                         tvEmpty.visibility = View.VISIBLE
-                        tvEmpty.text = "No documents found.\n\nTap 'Start Scanning' to scan your first document."
+                        tvEmpty.text = "No documents found.\n\nScan a Land Approval Form to see results here."
                     } else {
                         documents.forEach { doc ->
                             addDocumentCard(doc)
@@ -86,25 +86,21 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
-    private fun addDocumentCard(doc: DocumentRecord) {
+    private fun addDocumentCard(doc: TempForm1) {
         val inflater = LayoutInflater.from(this)
-        val card = inflater.inflate(R.layout.item_document, container, false) as LinearLayout
+        val card = inflater.inflate(R.layout.item_document, container, false) as com.google.android.material.card.MaterialCardView
 
         card.findViewById<TextView>(R.id.tvFullName).text =
-            doc.full_name.takeIf { it.isNotEmpty() } ?: "Unknown"
-
-        card.findViewById<TextView>(R.id.tvDocNumber).text =
-            "ID: ${doc.document_number.takeIf { it.isNotEmpty() } ?: "N/A"}"
+            "Land Approval: ${doc.variety ?: "N/A"}"
 
         card.findViewById<TextView>(R.id.tvDate).text =
-            doc.dateOfBirthFormatted
+            "Lot: ${doc.lot_no_for_seeds ?: "N/A"} | Date: ${doc.form_date ?: "N/A"}"
 
-        card.findViewById<TextView>(R.id.tvImageUrl).text =
-            if (doc.aligned_image_url != null) "📷 Image saved" else "No image"
+        card.findViewById<TextView>(R.id.tvImageUrl).text = "Saved to Supabase"
 
         // Delete button
         card.findViewById<Button>(R.id.btnDelete).setOnClickListener {
-            confirmDelete(doc)
+            Toast.makeText(this, "Batch deletion coming soon", Toast.LENGTH_SHORT).show()
         }
 
         container.addView(card)
