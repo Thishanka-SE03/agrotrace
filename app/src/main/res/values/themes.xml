@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.DocumentScanner" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">#1976D2</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="android:statusBarColor">#1976D2</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <style name="AppButton" parent="Widget.Material3.Button">
+        <item name="android:layout_height">60dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.Button.Rounded</item>
+    </style>
+
+    <style name="AppButton.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.Button.Rounded</item>
+        <item name="strokeColor">@color/primary</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.Button.Rounded" parent="">
+        <item name="cornerSize">30dp</item>
     </style>
 </resources>
