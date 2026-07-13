@@ -1,23 +1,44 @@
 package com.lnbti.agrotrace
 
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updateLayoutParams
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.lnbti.agrotrace.databinding.ActivityMainBinding
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
 
+    private var systemBarInsets: Insets = Insets.NONE
+    private var imeInsets: Insets = Insets.NONE
+    private var bottomNavigationVisible = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+        updateSystemBarIconAppearance()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -25,27 +46,57 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Setup Bottom Navigation
         binding.bottomNavigation.setupWithNavController(navController)
-
-        // Setup Drawer Navigation (Optional link to same destinations)
         binding.navigationView.setupWithNavController(navController)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.drawerLayout) { v, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            bottomNavigationVisible = destination.id !in setOf(
+                R.id.extractionFragment,
+                R.id.dataViewFragment,
+                R.id.documentDetailFragment
             )
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            binding.bottomNavigation.visibility =
+                if (bottomNavigationVisible) View.VISIBLE else View.GONE
+            applyWindowInsets()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.drawerLayout) { _, insets ->
+            systemBarInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            applyWindowInsets()
             insets
         }
-        
-        // Handle specific navigation requirements
-        // Bottom nav should:
-        // Preserve state
-        // Not recreate fragments unnecessarily
-        // Not stack fragments
-        // Navigation Component's setupWithNavController already handles most of this.
-        // SingleTop and popUpTo are handled by default when using menu item IDs that match destination IDs.
+        ViewCompat.requestApplyInsets(binding.drawerLayout)
+    }
+
+    private fun applyWindowInsets() {
+        if (!::binding.isInitialized) return
+
+        val contentBottomInset = if (bottomNavigationVisible) {
+            0
+        } else {
+            max(systemBarInsets.bottom, imeInsets.bottom)
+        }
+
+        binding.navHostFragment.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            leftMargin = systemBarInsets.left
+            topMargin = systemBarInsets.top
+            rightMargin = systemBarInsets.right
+            bottomMargin = contentBottomInset
+        }
+
+    }
+
+    private fun updateSystemBarIconAppearance() {
+        val isDarkTheme =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+                Configuration.UI_MODE_NIGHT_YES
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !isDarkTheme
+            isAppearanceLightNavigationBars = !isDarkTheme
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

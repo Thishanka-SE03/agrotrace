@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#81C784</color>
-    <color name="primary_light">#A5D6A7</color>
-    <color name="primary_dark">#2E7D32</color>
-    <color name="onPrimary">#00390A</color>
-    <color name="secondary">#FFD700</color>
-    <color name="onSecondary">#452B00</color>
+    <color name="primary">#83D99F</color>
+    <color name="primary_light">#1D3A28</color>
+    <color name="primary_container">#235333</color>
+    <color name="primary_dark">#A0E9B6</color>
+    <color name="onPrimary">#00391B</color>
+    <color name="onPrimaryContainer">#A0F2B8</color>
+    <color name="secondary">#B4CCBA</color>
+    <color name="onSecondary">#203529</color>
+    <color name="secondary_container">#354B3D</color>
 
-    <color name="background">#121212</color>
-    <color name="onBackground">#E6E1E5</color>
-    <color name="surface">#1C1B1F</color>
-    <color name="onSurface">#E6E1E5</color>
-    <color name="surfaceVariant">#49454F</color>
-    <color name="onSurfaceVariant">#CAC4D0</color>
-    <color name="outline">#938F99</color>
+    <color name="background">#101512</color>
+    <color name="onBackground">#DEE5DF</color>
+    <color name="surface">#171C19</color>
+    <color name="surface_container">#1D2420</color>
+    <color name="onSurface">#DEE5DF</color>
+    <color name="surfaceVariant">#303833</color>
+    <color name="onSurfaceVariant">#C0C9C2</color>
+    <color name="outline">#8A948D</color>
+    <color name="outlineVariant">#404943</color>
 
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="error">#F2B8B5</color>
+    <color name="success">#83D99F</color>
+    <color name="success_container">#173C25</color>
+    <color name="pending">#F4C44E</color>
+    <color name="pending_container">#493800</color>
+    <color name="failed">#FFB4AB</color>
+    <color name="error">#FFB4AB</color>
+    <color name="error_container">#690005</color>
+    <color name="info">#9FCBFF</color>
+    <color name="info_container">#173752</color>
 </resources>

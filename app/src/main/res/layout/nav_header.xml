@@ -15,11 +15,11 @@
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/white">
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_leaf"
-            app:tint="@color/primary" />
+            android:contentDescription="AgroTrace logo"
+            android:src="@drawable/agrotrace_emblem" />
     </com.google.android.material.card.MaterialCardView>
 
     <TextView

@@ -5,17 +5,28 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/nav_home">
 
+    <action
+        android:id="@+id/action_global_history"
+        app:destination="@id/nav_history"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/nav_home"
+        app:popUpToInclusive="false" />
+
     <fragment
         android:id="@+id/nav_home"
         android:name="com.lnbti.agrotrace.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_documentDetailFragment"
+            app:destination="@id/documentDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_scan"
         android:name="com.lnbti.agrotrace.ui.scan.ScanFragment"
         android:label="Scan"
-        tools:layout="@layout/fragment_scan" >
+        tools:layout="@layout/fragment_scan">
         <action
             android:id="@+id/action_nav_scan_to_extractionFragment"
             app:destination="@id/extractionFragment" />
@@ -25,7 +36,11 @@
         android:id="@+id/nav_history"
         android:name="com.lnbti.agrotrace.ui.history.HistoryFragment"
         android:label="History"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_nav_history_to_documentDetailFragment"
+            app:destination="@id/documentDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_profile"
@@ -38,12 +53,8 @@
         android:name="com.lnbti.agrotrace.ui.scan.ExtractionFragment"
         android:label="Extracting Data"
         tools:layout="@layout/fragment_extraction">
-        <argument
-            android:name="imagePath"
-            app:argType="string" />
-        <argument
-            android:name="docType"
-            app:argType="integer" />
+        <argument android:name="imagePath" app:argType="string" />
+        <argument android:name="docType" app:argType="integer" />
         <action
             android:id="@+id/action_extractionFragment_to_dataViewFragment"
             app:destination="@id/dataViewFragment"
@@ -55,9 +66,16 @@
         android:name="com.lnbti.agrotrace.ui.scan.DataViewFragment"
         android:label="Verify Data"
         tools:layout="@layout/fragment_data_view">
-        <argument
-            android:name="extractedData"
-            app:argType="string" />
+        <argument android:name="extractedData" app:argType="string" />
+        <argument android:name="docType" app:argType="integer" />
+        <argument android:name="imagePath" app:argType="string" />
     </fragment>
 
+    <fragment
+        android:id="@+id/documentDetailFragment"
+        android:name="com.lnbti.agrotrace.ui.history.DocumentDetailFragment"
+        android:label="Document Details"
+        tools:layout="@layout/fragment_document_detail">
+        <argument android:name="documentId" app:argType="integer" />
+    </fragment>
 </navigation>

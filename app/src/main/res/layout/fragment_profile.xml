@@ -4,218 +4,225 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:clipToPadding="false"
+    android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="28dp">
 
         <TextView
-            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Profile"
+            android:text="Officer profile"
             android:textColor="@color/onBackground"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
-        <!-- Profile Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Manage your workspace and future synchronization settings."
+            android:textColor="@color/onSurfaceVariant"
+            android:textSize="13sp" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardProfileHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/surfaceVariant"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="@color/primary"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="2dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp">
+                android:background="@drawable/bg_hero_gradient"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="22dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/ivProfile"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_person"
-                    android:padding="16dp"
-                    android:background="@color/surface"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/primary" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    app:cardBackgroundColor="#28FFFFFF"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp">
+                    <ImageView
+                        android:id="@+id/ivProfile"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_person"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:id="@+id/tvName"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="John Doe"
-                    android:textColor="@color/onSurface"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/ivProfile"
-                    app:layout_constraintTop_toTopOf="@id/ivProfile" />
-
-                <TextView
-                    android:id="@+id/tvEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="john.doe@agrotrace.com"
-                    android:textColor="@color/onSurfaceVariant"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/tvName"
-                    app:layout_constraintTop_toBottomOf="@id/tvName" />
-
-                <Button
-                    android:id="@+id/btnEditProfile"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Edit Profile"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@id/tvName"
-                    app:layout_constraintTop_toBottomOf="@id/tvEmail" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Agricultural Officer"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="officer@agrotrace.lk"
+                        android:textColor="#D9F5E2"
+                        android:textSize="12sp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="7dp"
+                        android:minHeight="40dp"
+                        android:text="Edit profile"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Information Cards -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/outlineVariant"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="18dp">
+                    <TextView android:id="@+id/tvDocumentCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/onSurface" android:textSize="24sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="Documents" android:textColor="@color/onSurfaceVariant" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space android:layout_width="10dp" android:layout_height="1dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/outlineVariant"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="18dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7" android:textColor="@color/onSurface" android:textSize="24sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="Form types" android:textColor="@color/onSurfaceVariant" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space android:layout_width="10dp" android:layout_height="1dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/outlineVariant"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="18dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Local" android:textColor="@color/pending" android:textSize="16sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="Storage" android:textColor="@color/onSurfaceVariant" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
         <TextView
-            android:id="@+id/tvInfoLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Information"
-            android:textColor="@color/primary"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardProfileHeader" />
+            android:layout_marginTop="26dp"
+            android:text="Workspace"
+            android:textColor="@color/onBackground"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/outlineVariant"
             app:cardBackgroundColor="@color/surface"
-            app:layout_constraintTop_toBottomOf="@id/tvInfoLabel">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/outlineVariant"
+            app:strokeWidth="1dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="6dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <!-- Phone -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_photo_library"
-                        app:tint="@color/onSurfaceVariant" />
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Phone"
-                            android:textColor="@color/onSurfaceVariant"
-                            android:textSize="12sp" />
-                        <TextView
-                            android:id="@+id/tvPhone"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="+94 77 123 4567"
-                            android:textColor="@color/onSurface"
-                            android:textSize="14sp" />
+                <LinearLayout android:id="@+id/btnSync" android:layout_width="match_parent" android:layout_height="64dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="14dp">
+                    <ImageView android:layout_width="26dp" android:layout_height="26dp" android:src="@drawable/ic_cloud_done" app:tint="@color/primary" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Backup &amp; Supabase sync" android:textColor="@color/onSurface" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvSyncStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Coming soon • data is saved locally" android:textColor="@color/onSurfaceVariant" android:textSize="12sp" />
                     </LinearLayout>
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_arrow_forward" app:tint="@color/outline" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="48dp"
-                    android:background="@color/outlineVariant" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="14dp" android:background="@color/outlineVariant" />
 
-                <!-- Organization -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_description"
-                        app:tint="@color/onSurfaceVariant" />
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Organization"
-                            android:textColor="@color/onSurfaceVariant"
-                            android:textSize="12sp" />
-                        <TextView
-                            android:id="@+id/tvOrg"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Lanka Seed Certification Service"
-                            android:textColor="@color/onSurface"
-                            android:textSize="14sp" />
-                    </LinearLayout>
+                <LinearLayout android:id="@+id/btnSettings" android:layout_width="match_parent" android:layout_height="64dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="14dp">
+                    <ImageView android:layout_width="26dp" android:layout_height="26dp" android:src="@drawable/ic_settings" app:tint="@color/onSurfaceVariant" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:text="App settings" android:textColor="@color/onSurface" android:textSize="14sp" android:textStyle="bold" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_arrow_forward" app:tint="@color/outline" />
                 </LinearLayout>
 
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="14dp" android:background="@color/outlineVariant" />
+
+                <LinearLayout android:id="@+id/btnHelp" android:layout_width="match_parent" android:layout_height="64dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="14dp">
+                    <ImageView android:layout_width="26dp" android:layout_height="26dp" android:src="@drawable/ic_info" app:tint="@color/onSurfaceVariant" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:text="Help &amp; scan guidance" android:textColor="@color/onSurface" android:textSize="14sp" android:textStyle="bold" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_arrow_forward" app:tint="@color/outline" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Settings / Logout -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/AppButton.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="Logout"
+            android:layout_marginTop="20dp"
+            android:text="Sign out"
             android:textColor="@color/error"
-            app:layout_constraintTop_toBottomOf="@id/tvInfoLabel"
-            app:layout_goneMarginTop="40dp"
-            android:layout_marginHorizontal="40dp" />
+            app:icon="@drawable/ic_arrow_forward"
+            app:iconTint="@color/error"
+            app:strokeColor="@color/error" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvAppVersion"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="App Version 1.0.0"
-            android:textColor="@color/onSurfaceVariant"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogout" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginTop="18dp"
+            android:gravity="center"
+            android:text="AgroTrace 1.0"
+            android:textColor="@color/outline"
+            android:textSize="11sp" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

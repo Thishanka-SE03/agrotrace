@@ -2,77 +2,227 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@color/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="Review extracted data"
+        app:titleTextColor="@color/onBackground" />
+
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/layoutActions"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
-            android:id="@+id/editContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="20dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="28dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvDocumentType"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Verify Extracted Data"
+                android:text="Land Approval Form"
                 android:textColor="@color/onBackground"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvFieldSummary"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Edit any incorrect fields before saving"
+                android:layout_marginTop="5dp"
+                android:text="Review every field before saving."
                 android:textColor="@color/onSurfaceVariant"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
-            <!-- Fields will be added here dynamically -->
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/reviewProgress"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="16dp"
+                android:progress="80"
+                app:indicatorColor="@color/primary"
+                app:trackColor="@color/primary_container"
+                app:trackCornerRadius="3dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Step 4 of 5 • Verify"
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Next: Save"
+                    android:textColor="@color/onSurfaceVariant"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardScanPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/outlineVariant"
+                app:strokeWidth="1dp"
+                tools:visibility="visible">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="156dp">
+
+                    <ImageView
+                        android:id="@+id/ivScannedDocument"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="Original scanned document"
+                        android:scaleType="centerCrop"
+                        tools:src="@drawable/bg_scanner_preview" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|bottom"
+                        android:layout_margin="12dp"
+                        android:background="@drawable/bg_preview_label"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="6dp"
+                        android:text="Original scan • compare while editing"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/bannerReview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_success_soft"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:contentDescription="Extraction complete"
+                    android:src="@drawable/ic_check_circle"
+                    app:tint="@color/success" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AI extraction completed"
+                        android:textColor="@color/onSurface"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvReviewHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="Blank values are highlighted for manual entry."
+                        android:textColor="@color/onSurfaceVariant"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/dynamicFieldsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/layoutActions"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/surface"
-        android:elevation="8dp"
+        android:elevation="12dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnExport"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/AppButton.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="Export PDF" />
+            android:layout_weight="0.8"
+            android:text="Share"
+            app:icon="@drawable/ic_share"
+            app:iconGravity="textStart" />
 
-        <Button
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/saveProgress"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginHorizontal="4dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/primary"
+            app:trackThickness="3dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
+            style="@style/AppButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="Save Document" />
-
+            android:layout_weight="1.2"
+            android:text="Save document"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

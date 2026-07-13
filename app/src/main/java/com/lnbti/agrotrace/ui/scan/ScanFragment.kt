@@ -10,13 +10,14 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
-import com.lnbti.agrotrace.R
+import com.lnbti.agrotrace.DocumentTypeUtils
 import com.lnbti.agrotrace.databinding.FragmentScanBinding
 import java.io.File
 
@@ -27,15 +28,16 @@ class ScanFragment : Fragment() {
 
     private lateinit var scanner: GmsDocumentScanner
     private var selectedDocType: Int = 0
+    private var launchInProgress = false
 
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
+        launchInProgress = false
         if (result.resultCode == RESULT_OK) {
-            val scanningResult = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-            scanningResult?.let { handleScanningResult(it) }
+            GmsDocumentScanningResult.fromActivityResultIntent(result.data)?.let(::handleScanningResult)
         } else {
-            Toast.makeText(requireContext(), "Scanning cancelled", Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, "Scanning cancelled", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -61,7 +63,6 @@ class ScanFragment : Fragment() {
             .setResultFormats(RESULT_FORMAT_JPEG)
             .setScannerMode(SCANNER_MODE_FULL)
             .build()
-
         scanner = GmsDocumentScanning.getClient(options)
     }
 
@@ -76,42 +77,52 @@ class ScanFragment : Fragment() {
     }
 
     private fun startScanning(docType: Int) {
+        if (launchInProgress) return
         selectedDocType = docType
+        launchInProgress = true
+        Snackbar.make(
+            binding.root,
+            "Opening ${DocumentTypeUtils.name(docType)} scanner…",
+            Snackbar.LENGTH_SHORT
+        ).show()
+
         scanner.getStartScanIntent(requireActivity())
             .addOnSuccessListener { intentSender ->
-                val intentSenderRequest = IntentSenderRequest.Builder(intentSender).build()
-                scannerLauncher.launch(intentSenderRequest)
+                scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Scanner unavailable: ${e.message}", Toast.LENGTH_LONG).show()
+            .addOnFailureListener { error ->
+                launchInProgress = false
+                Toast.makeText(
+                    requireContext(),
+                    "Scanner unavailable: ${error.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 
     private fun handleScanningResult(result: GmsDocumentScanningResult) {
-        val pages = result.pages
-        if (pages.isNullOrEmpty()) return
+        val page = result.pages?.firstOrNull() ?: return
+        val cacheFile = File(
+            requireContext().cacheDir,
+            "agrotrace_${selectedDocType}_${System.currentTimeMillis()}.jpg"
+        )
 
-        val page = pages[0]
-        val uri = page.imageUri
-
-        // Copy to internal cache for processing
-        val cacheFile = File(requireContext().cacheDir, "scanned_doc.jpg")
-        try {
-            requireContext().contentResolver.openInputStream(uri)?.use { input ->
-                cacheFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            
-            // Navigate to ExtractionFragment
+        runCatching {
+            requireContext().contentResolver.openInputStream(page.imageUri)?.use { input ->
+                cacheFile.outputStream().use(input::copyTo)
+            } ?: error("Unable to read the scanned image")
+        }.onSuccess {
             val action = ScanFragmentDirections.actionNavScanToExtractionFragment(
                 imagePath = cacheFile.absolutePath,
                 docType = selectedDocType
             )
             findNavController().navigate(action)
-            
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Error saving image: ${e.message}", Toast.LENGTH_SHORT).show()
+        }.onFailure { error ->
+            Toast.makeText(
+                requireContext(),
+                "Could not save the scan: ${error.message}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

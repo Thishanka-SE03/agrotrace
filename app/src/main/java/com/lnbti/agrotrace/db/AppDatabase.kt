@@ -28,6 +28,9 @@ interface DocumentDao {
     @Insert
     suspend fun insert(doc: DocumentEntity): Long
 
+    @Query("SELECT * FROM documents WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Int): DocumentEntity?
+
     @Query("DELETE FROM documents WHERE id = :id")
     suspend fun delete(id: Int): Int
 }

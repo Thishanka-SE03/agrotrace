@@ -1,34 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#1B5E20</color> <!-- Dark Green -->
-    <color name="primary_light">#4C8C4A</color>
-    <color name="primary_dark">#003308</color>
+    <color name="primary">#176B3A</color>
+    <color name="primary_light">#DDF3E5</color>
+    <color name="primary_container">#C5EED3</color>
+    <color name="primary_dark">#0B4A27</color>
     <color name="onPrimary">#FFFFFF</color>
-    <color name="secondary">#2E7D32</color> <!-- Medium Green -->
+    <color name="onPrimaryContainer">#07391E</color>
+    <color name="secondary">#4D6354</color>
     <color name="onSecondary">#FFFFFF</color>
+    <color name="secondary_container">#D0E8D6</color>
 
-    <color name="background">#F8F9FA</color>
-    <color name="onBackground">#1C1B1F</color>
+    <color name="background">#F7FAF7</color>
+    <color name="onBackground">#18211B</color>
     <color name="surface">#FFFFFF</color>
-    <color name="onSurface">#1C1B1F</color>
-    <color name="surfaceVariant">#F0F4F0</color>
-    <color name="onSurfaceVariant">#44474E</color>
-    <color name="outline">#C4C7C5</color>
-    <color name="outlineVariant">#E1E3E1</color>
+    <color name="surface_container">#F0F5F1</color>
+    <color name="onSurface">#18211B</color>
+    <color name="surfaceVariant">#E6EEE8</color>
+    <color name="onSurfaceVariant">#414A44</color>
+    <color name="outline">#718078</color>
+    <color name="outlineVariant">#C8D4CC</color>
 
-    <color name="doc_type_1">#8D6E63</color> <!-- Brown -->
-    <color name="doc_type_2">#5C6BC0</color> <!-- Indigo -->
-    <color name="doc_type_3">#66BB6A</color> <!-- Green -->
-    <color name="doc_type_4">#7E57C2</color> <!-- Purple -->
-    <color name="doc_type_5">#FFA726</color> <!-- Orange -->
-    <color name="doc_type_6">#42A5F5</color> <!-- Light Blue -->
-    <color name="doc_type_7">#EF5350</color> <!-- Red/Salmon -->
+    <color name="doc_type_1">#8A5A44</color>
+    <color name="doc_type_1_soft">#F5EAE4</color>
+    <color name="doc_type_2">#3F63B5</color>
+    <color name="doc_type_2_soft">#E8EEFC</color>
+    <color name="doc_type_3">#2E7D4F</color>
+    <color name="doc_type_3_soft">#E3F3E9</color>
+    <color name="doc_type_4">#7254A8</color>
+    <color name="doc_type_4_soft">#EFE9F8</color>
+    <color name="doc_type_5">#C66A1B</color>
+    <color name="doc_type_5_soft">#FFF0E1</color>
+    <color name="doc_type_6">#2676A8</color>
+    <color name="doc_type_6_soft">#E4F3FB</color>
+    <color name="doc_type_7">#B24E55</color>
+    <color name="doc_type_7_soft">#FBE9EB</color>
 
-    <color name="success">#2E7D32</color>
-    <color name="pending">#F9A825</color>
-    <color name="failed">#C62828</color>
+    <color name="success">#1F7A43</color>
+    <color name="success_container">#DDF3E5</color>
+    <color name="pending">#9A6500</color>
+    <color name="pending_container">#FFF1C7</color>
+    <color name="failed">#BA1A1A</color>
+    <color name="error">#BA1A1A</color>
+    <color name="error_container">#FFDAD6</color>
+    <color name="info">#256A9E</color>
+    <color name="info_container">#D7EDFF</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="error">#B3261E</color>
+    <color name="transparent">#00000000</color>
 </resources>
