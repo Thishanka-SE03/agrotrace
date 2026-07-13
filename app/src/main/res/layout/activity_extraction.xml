@@ -84,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="EXTRACTED TEXT"
+        android:text="VERIFY &amp; EDIT DATA"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
@@ -96,22 +96,21 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="24dp"
-        android:background="#F9F9F9"
+        android:layout_marginBottom="16dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@id/btnSave"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lblExtractedText">
 
-        <TextView
-            android:id="@+id/tvResults"
+        <LinearLayout
+            android:id="@+id/editContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text=""
-            android:textColor="#333333"
-            android:textSize="13sp"
-            android:lineSpacingExtra="4dp" />
+            android:orientation="vertical"
+            android:padding="4dp">
+            <!-- Dynamic edit fields will be added here -->
+        </LinearLayout>
     </ScrollView>
 
     <com.google.android.material.button.MaterialButton
@@ -119,7 +118,7 @@
         style="@style/AppButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Add to Journal"
+        android:text="CONFIRM DATA"
         android:textAllCaps="true"
         app:icon="@drawable/ic_edit"
         app:iconTint="@color/white"
@@ -131,29 +130,16 @@
         style="@style/AppButton.Outlined"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Export as PDF"
+        android:text="RE-SCAN"
         android:textAllCaps="true"
         android:textColor="@color/primary"
-        app:icon="@drawable/ic_export"
+        app:icon="@android:drawable/ic_menu_rotate"
         app:iconTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp" />
 
-    <!-- Actual Retry Hidden -->
-    <Button
-        android:id="@+id/btnActualRetry"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnCancel"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Actual Hidden Buttons for Legacy Compatibility if needed -->
+    <Button android:id="@+id/btnActualRetry" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+    <Button android:id="@+id/btnCancel" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

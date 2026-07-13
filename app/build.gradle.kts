@@ -110,9 +110,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt")
 
     // Room Database (offline queue)
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    val roomVersion = "2.7.0-alpha13"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // WorkManager (background sync)
     implementation("androidx.work:work-runtime-ktx:2.10.0")
