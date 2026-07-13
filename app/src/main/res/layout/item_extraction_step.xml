@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        app:cardBackgroundColor="@color/surfaceVariant"
+        app:cardCornerRadius="17dp"
+        app:cardElevation="0dp">
+        <ImageView
+            android:id="@+id/ivStepIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@color/outline" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvStepTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_weight="1"
+        android:text="Processing"
+        android:textColor="@color/onSurface"
+        android:textSize="14sp" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/stepProgress"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorSize="22dp"
+        app:trackThickness="2dp" />
+</LinearLayout>
