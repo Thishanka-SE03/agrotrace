@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.lnbti.agrotrace.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_scan"
+        android:name="com.lnbti.agrotrace.ui.scan.ScanFragment"
+        android:label="Scan"
+        tools:layout="@layout/fragment_scan" >
+        <action
+            android:id="@+id/action_nav_scan_to_extractionFragment"
+            app:destination="@id/extractionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_history"
+        android:name="com.lnbti.agrotrace.ui.history.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.lnbti.agrotrace.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/extractionFragment"
+        android:name="com.lnbti.agrotrace.ui.scan.ExtractionFragment"
+        android:label="Extracting Data"
+        tools:layout="@layout/fragment_extraction">
+        <argument
+            android:name="imagePath"
+            app:argType="string" />
+        <argument
+            android:name="docType"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_extractionFragment_to_dataViewFragment"
+            app:destination="@id/dataViewFragment"
+            app:popUpTo="@id/nav_scan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dataViewFragment"
+        android:name="com.lnbti.agrotrace.ui.scan.DataViewFragment"
+        android:label="Verify Data"
+        tools:layout="@layout/fragment_data_view">
+        <argument
+            android:name="extractedData"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

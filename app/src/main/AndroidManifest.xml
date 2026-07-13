@@ -36,23 +36,5 @@
             </intent-filter>
         </activity>
 
-        <!-- Scanner Activity -->
-        <activity
-            android:name=".ScannerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Extraction Activity -->
-        <activity
-            android:name=".ExtractionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Results/History Activity -->
-        <activity
-            android:name=".ResultsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
     </application>
 </manifest>
