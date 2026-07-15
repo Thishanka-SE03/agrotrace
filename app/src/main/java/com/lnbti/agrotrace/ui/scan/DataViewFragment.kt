@@ -26,6 +26,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.lnbti.agrotrace.DocumentDataFormatter
+import com.lnbti.agrotrace.DocumentSchema
 import com.lnbti.agrotrace.DocumentTypeUtils
 import com.lnbti.agrotrace.R
 import com.lnbti.agrotrace.databinding.FragmentDataViewBinding
@@ -96,12 +98,13 @@ class DataViewFragment : Fragment() {
         binding.dynamicFieldsContainer.removeAllViews()
         editableFields.clear()
 
-        originalData = runCatching {
+        val parsedData = runCatching {
             json.parseToJsonElement(rawJson) as? JsonObject
                 ?: JsonObject(mapOf("extracted_data" to JsonPrimitive(rawJson)))
         }.getOrElse {
             JsonObject(mapOf("extracted_data" to JsonPrimitive(rawJson)))
         }
+        originalData = DocumentSchema.mergeWithExpected(args.docType, parsedData)
 
         val primitiveEntries = originalData
             .filterValues { it is JsonPrimitive || it is JsonNull }
@@ -362,9 +365,10 @@ class DataViewFragment : Fragment() {
 
         val prepared = runCatching {
             val edited = rebuildElement(originalData, "") as JsonObject
+            val cleaned = DocumentSchema.pruneBlankArrayRecords(edited) as JsonObject
             SavePayload(
-                json = json.encodeToString(JsonObject.serializer(), edited),
-                summary = createSummary(edited)
+                json = json.encodeToString(JsonObject.serializer(), cleaned),
+                summary = createSummary(cleaned)
             )
         }.getOrElse { error ->
             showSaveError(error)
@@ -452,8 +456,10 @@ class DataViewFragment : Fragment() {
     private fun shareEditedData() {
         val body = runCatching {
             val edited = rebuildElement(originalData, "") as JsonObject
+            val cleaned = DocumentSchema.pruneBlankArrayRecords(edited) as JsonObject
+            val editedJson = json.encodeToString(JsonObject.serializer(), cleaned)
             "${DocumentTypeUtils.name(args.docType)}\n\n" +
-                json.encodeToString(JsonObject.serializer(), edited)
+                DocumentDataFormatter.toReadableText(editedJson)
         }.getOrElse { error ->
             Snackbar.make(
                 binding.root,
@@ -521,40 +527,11 @@ class DataViewFragment : Fragment() {
         else -> element
     }
 
-    private fun createSummary(data: JsonObject): String {
-        val preferredKeys = listOf(
-            "farmer_name",
-            "name_of_seed_producer",
-            "farmer_registration_no",
-            "registration_no",
-            "lot_no",
-            "lot_no_for_seeds",
-            "request_no",
-            "report_no",
-            "label_serial_no",
-            "inspection_no",
-            "harvest_inspect_no"
+    private fun createSummary(data: JsonObject): String =
+        DocumentDataFormatter.createSummary(
+            data,
+            "Verified ${DocumentTypeUtils.name(args.docType)}"
         )
-        preferredKeys.forEach { key ->
-            val value = data[key] ?: return@forEach
-            when (value) {
-                is JsonPrimitive -> value.contentOrNull
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { return it }
-
-                is JsonArray -> value.firstOrNull()?.let { item ->
-                    if (item is JsonPrimitive) {
-                        item.contentOrNull
-                            ?.takeIf { it.isNotBlank() }
-                            ?.let { return it }
-                    }
-                }
-
-                else -> Unit
-            }
-        }
-        return "Verified ${DocumentTypeUtils.name(args.docType)}"
-    }
 
     private fun primitiveContent(element: JsonElement): String = when (element) {
         JsonNull -> ""
@@ -562,33 +539,11 @@ class DataViewFragment : Fragment() {
         else -> element.toString()
     }
 
-    private fun labelFor(key: String): String {
-        val aliases = mapOf(
-            "see_act_registration_no" to "Seed Act registration no.",
-            "harvest_inspect_no" to "Harvest inspection no.",
-            "no_of_containers" to "Number of containers",
-            "officer_sign" to "Officer seal and signature",
-            "crop_id" to "Crop",
-            "form_no" to "Form no.",
-            "lot_no" to "Lot no.",
-            "lot_no_for_seeds" to "Seed lot numbers"
-        )
-        return aliases[key] ?: key
-            .replace('_', ' ')
-            .trim()
-            .replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase() else it.toString()
-            }
-    }
+    private fun labelFor(key: String): String =
+        DocumentDataFormatter.labelFor(key)
 
-    private fun singularLabel(key: String): String {
-        val label = labelFor(key)
-        return when {
-            label.endsWith("ies") -> label.dropLast(3) + "y"
-            label.endsWith("s") -> label.dropLast(1)
-            else -> label
-        }
-    }
+    private fun singularLabel(key: String): String =
+        DocumentDataFormatter.singularLabel(key)
 
     private val Int.dp: Int
         get() = (this * resources.displayMetrics.density).toInt()

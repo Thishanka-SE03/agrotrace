@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
+import com.lnbti.agrotrace.DocumentDataFormatter
 import com.lnbti.agrotrace.DocumentTypeUtils
 import com.lnbti.agrotrace.R
 import com.lnbti.agrotrace.databinding.FragmentHistoryBinding
@@ -95,9 +96,13 @@ class HistoryFragment : Fragment() {
         val dayEnd = selectedDayStart?.plus(24 * 60 * 60 * 1000)
 
         val filtered = allDocuments.filter { document ->
+            val searchableData = if (query.isBlank()) "" else
+                DocumentDataFormatter.toReadableText(document.rawJson)
+                    .lowercase(Locale.getDefault())
             val matchesQuery = query.isBlank() ||
                 document.title.lowercase(Locale.getDefault()).contains(query) ||
-                document.summary.lowercase(Locale.getDefault()).contains(query)
+                document.summary.lowercase(Locale.getDefault()).contains(query) ||
+                searchableData.contains(query)
             val matchesCategory = selectedCategory == "all" || DocumentTypeUtils.category(document.type) == selectedCategory
             val matchesDate = selectedDayStart == null ||
                 (document.timestamp >= selectedDayStart!! && document.timestamp < dayEnd!!)
@@ -163,7 +168,11 @@ class HistoryFragment : Fragment() {
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_SUBJECT, document.title)
-                    putExtra(Intent.EXTRA_TEXT, "${document.title}\n${document.summary}\n\n${document.rawJson}")
+                    val readableData = DocumentDataFormatter.toReadableText(document.rawJson)
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "${document.title}\n${document.summary}\n\n$readableData"
+                    )
                 },
                 "Share document"
             )

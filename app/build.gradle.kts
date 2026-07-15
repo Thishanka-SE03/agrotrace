@@ -23,8 +23,8 @@ android {
         applicationId = "com.lnbti.agrotrace"
         minSdk = 24
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
 
         // API Keys from local.properties
         buildConfigField(
